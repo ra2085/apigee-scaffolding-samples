@@ -1,0 +1,4 @@
+ - template:
+     src: pom.xml.j2
+     dest: ./{{ api_name }}/pom.xml
+   tags: always

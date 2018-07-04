@@ -1,0 +1,11 @@
+ - name: Creates api directory
+   file: path=./{{ api_name }} state=directory
+   tags: always
+ - name: execute openapi2apigee
+   shell: openapi2apigee generateApi {{ api_name }} -s {{ api_name }}.yaml -d .
+   tags: always
+ - name: Clean ZIP file
+   file:
+     state: absent
+     path: "./{{ api_name }}/apiproxy.zip"
+   tags: always

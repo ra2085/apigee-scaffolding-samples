@@ -1,0 +1,4 @@
+ - template:
+     src: flow-callout-OAuth.xml.j2
+     dest: ./{{ api_name }}/apiproxy/policies/flow-callout-OAuth-{{ sec_pattern }}.xml
+   tags: sec

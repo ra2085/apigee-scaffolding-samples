@@ -1,0 +1,19 @@
+{
+  "name": "generator-apigee-patterns-company-x",
+  "version": "1.0.0",
+  "description": "Scaffolding sample for company x",
+  "main": "index.js",
+  "files": [
+    "generators"
+  ],
+  "author": "rgonzalez",
+  "license": "MIT",
+  "keywords": [
+    "apigee-patterns-company-x"
+  ],
+  "dependencies": {
+    "chalk": "^1.0.0",
+    "yeoman-generator": "^2.0.5",
+    "yosay": "^1.0.3"
+  }
+}

@@ -1,0 +1,6 @@
+---
+ - hosts: localhost
+   roles:
+    - create_proxy_from_spec
+    - map_maven_templates
+    - sec_patterns
