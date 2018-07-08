@@ -14,6 +14,8 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "yeoman-generator": "^2.0.5",
-    "yosay": "^1.0.3"
+    "yosay": "^1.0.3",
+    "swagger-node-codegen": "^1.3.0",
+    "libxslt": "^0.7.0"
   }
 }

@@ -1,0 +1,16 @@
+{
+    "mockDirectory": "./mock",
+    "quiet": false,
+    "port": "8080",
+    "latency": 50,
+    "logRequestHeaders": false,
+    "webServices": {
+	"": {
+	    "latency": 20,
+	    "verbs": ["get"],
+	    "responses": {
+		"get": {"httpStatus": 200, "mockFile": "ok.json"}
+	    }
+	}
+    }
+}
