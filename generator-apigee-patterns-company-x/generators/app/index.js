@@ -137,8 +137,8 @@ module.exports = class extends Generator {
                 api.paths.forEach((path)=>{
                     console.log(JSON.stringify(path));
                 });
+                resolve(true);
             });
-            resolve(true);
         });
 	
     }
