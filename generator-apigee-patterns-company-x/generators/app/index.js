@@ -23,7 +23,13 @@ module.exports = class extends Generator {
       message : 'Your API name',
 	default : this.appname, // Default to current folder name. This should also be your openAPI file name.
 	validate(input) {
-        return SwaggerParser.validate(input+'.yaml').catch((err) => { return 'You must provide an existing OpenAPI spec (yaml file in working directory) and the spec MUST be valid' });
+        return new Promise((resolve, reject) => {
+            SwaggerParser.validate(input+'.yaml').then((api) => {
+                resolve(true);
+            }).catch((err) => {
+                resolve('You must provide an existing OpenAPI spec (yaml file in working directory) and the spec MUST be valid');
+            });
+        });
 	}
     }, {
         type : 'confirm',
@@ -155,6 +161,7 @@ module.exports = class extends Generator {
                     console.log(JSON.stringify(path));
                 });
             });
+            resolve(true);
         });
 	
     }
