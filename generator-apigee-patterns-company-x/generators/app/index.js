@@ -23,7 +23,7 @@ module.exports = class extends Generator {
       message : 'Your API name',
 	default : this.appname, // Default to current folder name. This should also be your openAPI file name.
 	validate : (input) => {
-        let validated = await SwaggerParser.validate(input+'.yaml').catch((err) => { return 'You must provide an existing OpenAPI spec (yaml file in working directory)'; });
+        let validated = await SwaggerParser.validate(input+'.yaml');
         return true;
 	    //return this.fs.exists(input+'.yaml') ? true : 'You must provide an existing OpenAPI spec (yaml file in working directory)';
 	}
