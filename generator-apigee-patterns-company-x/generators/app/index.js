@@ -111,7 +111,7 @@ module.exports = class extends Generator {
     createMock(){
 	if(this.promptAnswers.createMock){
 	    execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
-	    execSync('cd '+this.promptAnswers.name+'/node && npm install');
+	    execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 	    var setMockScriptTargetXslt = this.fs.read(this.templatePath('set_mock_script_target.xslt'));
 	    var stylesheet = libxslt.parse(setMockScriptTargetXslt);
 	    var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
@@ -143,7 +143,7 @@ module.exports = class extends Generator {
                     okResponse.mockFile = 'ok.json';
                     let responses = {};
                     for (let verb in api.paths[path]){
-                        if(supportedVerbs.includes(verb)){
+                        if(supportedVerbs.includes(verb.toUpperCase())){
                             webService.verbs.push(verb);
                             Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
                         }
