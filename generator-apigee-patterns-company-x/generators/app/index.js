@@ -149,7 +149,7 @@ module.exports = class extends Generator {
                         }
                     }
                     Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
-                    Object.defineProperty(webServices, path, {value: webService, writable: true, enumerable: true});
+                    Object.defineProperty(webServices, path.replace(/\//g,''), {value: webService, writable: true, enumerable: true});
                 };
                 Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                 this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig));
