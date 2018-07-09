@@ -135,9 +135,9 @@ module.exports = class extends Generator {
             let webServices = {};
             
             nativeObject.then((api)=>{
-            //    api.paths.forEach((path)=>{
+                for (let path in api.paths){
                     console.log(JSON.stringify(api));
-            //    });
+                };
                 resolve(true);
             });
         });
