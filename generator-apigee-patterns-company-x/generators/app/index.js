@@ -23,8 +23,7 @@ module.exports = class extends Generator {
       message : 'Your API name',
 	default : this.appname, // Default to current folder name. This should also be your openAPI file name.
 	validate(input) {
-        return SwaggerParser.validate(input+'.yaml').catch((err) => { return 'You must provide an existing OpenAPI spec (yaml file in working directory)' });
-	    //return this.fs.exists(input+'.yaml') ? true : 'You must provide an existing OpenAPI spec (yaml file in working directory)';
+        return SwaggerParser.validate(input+'.yaml').catch((err) => { return 'You must provide an existing OpenAPI spec (yaml file in working directory) and the spec MUST be valid' });
 	}
     }, {
         type : 'confirm',
@@ -139,19 +138,26 @@ module.exports = class extends Generator {
 	    this.fs.commit(()=>{});
 	}
     }
-/*
+
     createTests(){
-	let nativeObject = await SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
-        var mockConfig = {};
-	mockConfig.mockDirectory = './mock';
-	mockConfig.quiet = false;
-	mockConfig.port = '8000';
-	mockConfig.latency = 50;
-	mockConfig.logRequestHeaders = false;
-	var webServices = {};
+        
+        return new Promise((resolve, reject) => {
+           let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
+            let mockConfig = {};
+            mockConfig.mockDirectory = './mock';
+            mockConfig.quiet = false;
+            mockConfig.port = '8000';
+            mockConfig.latency = 50;
+            mockConfig.logRequestHeaders = false;
+            let webServices = {};
+            nativeObject.then((api)=>{
+                api.paths.forEach((path)=>{
+                    console.log(JSON.stringify(path));
+                });
+            });
+        });
 	
-	
-    }*/
+    }
 
     publishApi(){
 	execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
