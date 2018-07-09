@@ -136,8 +136,23 @@ module.exports = class extends Generator {
             
             nativeObject.then((api)=>{
                 for (let path in api.paths){
-                    console.log(JSON.stringify(path));
+                    let webService = {};
+                    webService.latency = 1000;
+                    webService.verbs = [];
+                    let okResponse = {};
+                    okResponse.httpStatus = 200;
+                    okResponse.mockFile = 'ok.json';
+                    //console.log(JSON.stringify(api.paths[path]));
+                    let responses = {};
+                    for (let verb in api.paths[path]){
+                        webService.verbs.push(verb);
+                        Object.defineProperty(responses, verb, {value: okResponse, writable: true});
+                    }
+                    Object.defineProperty(webService, 'responses', {value: responses, writable: true});
+                    Object.defineProperty(webServices, path, {value: webService, writable: true});
                 };
+                mockConfig.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true});
+                console.log(JSON.stringify(mockConfig));
                 resolve(true);
             });
         });
