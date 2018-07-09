@@ -146,12 +146,12 @@ module.exports = class extends Generator {
                     let responses = {};
                     for (let verb in api.paths[path]){
                         webService.verbs.push(verb);
-                        Object.defineProperty(responses, verb, {value: okResponse, writable: true});
+                        Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
                     }
-                    Object.defineProperty(webService, 'responses', {value: responses, writable: true});
-                    Object.defineProperty(webServices, path, {value: webService, writable: true});
+                    Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
+                    Object.defineProperty(webServices, path, {value: webService, writable: true, enumerable: true});
                 };
-                Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true});
+                Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                 console.log(JSON.stringify(mockConfig));
                 resolve(true);
             });
