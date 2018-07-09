@@ -162,7 +162,7 @@ module.exports = class extends Generator {
     }
 
     createTests(){
-    if(this.promptAnswers.publishApi){    
+    if(this.promptAnswers.publishApi && this.promptAnswers.createMock){    
         execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
         this.fs.copyTpl(
 	    this.templatePath('sampleFeature.feature'),
