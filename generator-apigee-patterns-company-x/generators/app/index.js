@@ -140,7 +140,7 @@ module.exports = class extends Generator {
 	    this.fs.commit(()=>{});
 	}
     }
-
+/*
     createTests(){
 	let nativeObject = await SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
         var mockConfig = {};
@@ -152,7 +152,7 @@ module.exports = class extends Generator {
 	var webServices = {};
 	
 	
-    }
+    }*/
 
     publishApi(){
 	execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
