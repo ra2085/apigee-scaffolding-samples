@@ -122,8 +122,8 @@ module.exports = class extends Generator {
 	}
     }
 
-    createTests(){
-        
+    createMockServer(){
+        if(this.promptAnswers.createMock){
         return new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
             let mockConfig = {};
@@ -133,7 +133,7 @@ module.exports = class extends Generator {
             mockConfig.latency = 50;
             mockConfig.logRequestHeaders = false;
             let webServices = {};
-            
+            let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
             nativeObject.then((api)=>{
                 for (let path in api.paths){
                     let webService = {};
@@ -142,21 +142,23 @@ module.exports = class extends Generator {
                     let okResponse = {};
                     okResponse.httpStatus = 200;
                     okResponse.mockFile = 'ok.json';
-                    //console.log(JSON.stringify(api.paths[path]));
                     let responses = {};
                     for (let verb in api.paths[path]){
-                        webService.verbs.push(verb);
-                        Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
+                        if(supportedVerbs.includes(verb)){
+                            webService.verbs.push(verb);
+                            Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
+                        }
                     }
                     Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
                     Object.defineProperty(webServices, path, {value: webService, writable: true, enumerable: true});
                 };
                 Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                console.log(JSON.stringify(mockConfig));
+                this.fs.write(this.promptAnswers.name+'/apiproxy/resources/node/config-generated.json', JSON.stringify(mockConfig));
+                this.fs.commit(()=>{});
                 resolve(true);
             });
         });
-	
+        }
     }
 
     publishApi(){
