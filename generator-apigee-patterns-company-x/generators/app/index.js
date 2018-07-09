@@ -112,7 +112,6 @@ module.exports = class extends Generator {
 	if(this.promptAnswers.createMock){
 	    execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
 	    execSync('cd '+this.promptAnswers.name+'/node && npm install');
-	    //execSync('cp -r '+this.promptAnswers.name+'/node '+this.promptAnswers.name+'/apiproxy/resources/');
 	    var setMockScriptTargetXslt = this.fs.read(this.templatePath('set_mock_script_target.xslt'));
 	    var stylesheet = libxslt.parse(setMockScriptTargetXslt);
 	    var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
@@ -153,7 +152,7 @@ module.exports = class extends Generator {
                     Object.defineProperty(webServices, path, {value: webService, writable: true, enumerable: true});
                 };
                 Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                this.fs.write(this.promptAnswers.name+'/apiproxy/resources/config-generated.json', JSON.stringify(mockConfig));
+                this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig));
                 this.fs.commit(()=>{});
                 resolve(true);
             });
