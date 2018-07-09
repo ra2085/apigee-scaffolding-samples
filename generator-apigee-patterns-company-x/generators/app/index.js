@@ -79,16 +79,6 @@ module.exports = class extends Generator {
         //    { security: answers.security }
         //);
     }
-    
-    _validate_spec(apiSpec){
-        SwaggerParser.validate(apiSpec)
-          .then(function(api) {
-            console.log('Yay! The API is valid.');
-          })
-          .catch(function(err) {
-            console.error('Onoes! The API is invalid. ' + err.message);
-          });
-    }
 
     openapiToApigee(){
 	this.spawnCommandSync('openapi2apigee',
