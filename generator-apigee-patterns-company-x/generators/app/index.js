@@ -1,10 +1,8 @@
 var fsy = require('fs');
 var Generator = require('yeoman-generator');
 var chalk = require('chalk');
-const path = require('path');
 var execSync = require('child_process').execSync;
 var libxslt = require('libxslt');
-var YAML = require('yamljs');
 var SwaggerParser = require('swagger-parser');
 
 module.exports = class extends Generator {
@@ -25,7 +23,9 @@ module.exports = class extends Generator {
       message : 'Your API name',
 	default : this.appname, // Default to current folder name. This should also be your openAPI file name.
 	validate : (input) => {
-	    return this.fs.exists(input+'.yaml') ? true : 'You must provide an existing OpenAPI spec (yaml file in working directory)';
+        let validated = await SwaggerParser.validate(input+'.yaml').catch((err) => { return 'You must provide an existing OpenAPI spec (yaml file in working directory)'; });
+        return true;
+	    //return this.fs.exists(input+'.yaml') ? true : 'You must provide an existing OpenAPI spec (yaml file in working directory)';
 	}
     }, {
         type : 'confirm',
@@ -74,6 +74,38 @@ module.exports = class extends Generator {
         //    this.destinationPath(answers.name+'/apiproxy/policies/flow-callout-OAuth-'+answers.security+'.xml'),
         //    { security: answers.security }
         //);
+    }
+    
+    _validate_spec(apiSpec){
+        SwaggerParser.validate(apiSpec)
+          .then(function(api) {
+            console.log('Yay! The API is valid.');
+          })
+          .catch(function(err) {
+            console.error('Onoes! The API is invalid. ' + err.message);
+          });
+    }
+    
+    validate() {
+    return new Promise((resolve, reject) => {
+      if (this.isValidDereference && this.api) {
+        return resolve(this.api);
+      }
+
+      this.swaggerParser.validate(this.swaggerFilepath)
+        .then((api) => {
+          this.isValidDereference = !!(this.api = api);
+
+          resolve(this.api);
+        })
+        .catch((error) => {
+          this.isValidDereference = false;
+
+          tracer.warn(`Api is invalid: ${error.message}`);
+
+          reject(error);
+        });
+    });
     }
 
 
