@@ -133,10 +133,11 @@ module.exports = class extends Generator {
             mockConfig.latency = 50;
             mockConfig.logRequestHeaders = false;
             let webServices = {};
+            
             nativeObject.then((api)=>{
-                api.paths.forEach((path)=>{
-                    console.log(JSON.stringify(path));
-                });
+            //    api.paths.forEach((path)=>{
+                    console.log(JSON.stringify(api));
+            //    });
                 resolve(true);
             });
         });
