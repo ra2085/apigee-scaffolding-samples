@@ -136,7 +136,7 @@ module.exports = class extends Generator {
             
             nativeObject.then((api)=>{
                 for (let path in api.paths){
-                    console.log(JSON.stringify(api));
+                    console.log(JSON.stringify(path));
                 };
                 resolve(true);
             });
