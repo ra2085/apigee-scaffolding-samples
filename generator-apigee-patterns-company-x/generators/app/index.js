@@ -89,29 +89,6 @@ module.exports = class extends Generator {
             console.error('Onoes! The API is invalid. ' + err.message);
           });
     }
-    
-    validate() {
-    return new Promise((resolve, reject) => {
-      if (this.isValidDereference && this.api) {
-        return resolve(this.api);
-      }
-
-      this.swaggerParser.validate(this.swaggerFilepath)
-        .then((api) => {
-          this.isValidDereference = !!(this.api = api);
-
-          resolve(this.api);
-        })
-        .catch((error) => {
-          this.isValidDereference = false;
-
-          tracer.warn(`Api is invalid: ${error.message}`);
-
-          reject(error);
-        });
-    });
-    }
-
 
     openapiToApigee(){
 	this.spawnCommandSync('openapi2apigee',
