@@ -151,7 +151,7 @@ module.exports = class extends Generator {
                     Object.defineProperty(webService, 'responses', {value: responses, writable: true});
                     Object.defineProperty(webServices, path, {value: webService, writable: true});
                 };
-                mockConfig.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true});
+                Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true});
                 console.log(JSON.stringify(mockConfig));
                 resolve(true);
             });
