@@ -154,14 +154,27 @@ module.exports = class extends Generator {
                 Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                 this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig));
                 this.fs.commit(()=>{});
+                this.apiDereferenced = api;
                 resolve(true);
             });
         });
         }
     }
 
+    createTests(){
+    if(this.promptAnswers.publishApi){    
+        execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+        this.fs.copyTpl(
+	    this.templatePath('sampleFeature.feature'),
+	    this.destinationPath(this.promptAnswers.name+'/tests/features/'),
+	    {api : this.apiDereferenced}
+        );
+        this.fs.commit(()=>{});
+    }
+    }
+    
     publishApi(){
-	execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+    
 	if(this.promptAnswers.publishApi){
 	        this.spawnCommandSync('mvn',
 	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval']);
