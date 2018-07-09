@@ -166,7 +166,7 @@ module.exports = class extends Generator {
         execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
         this.fs.copyTpl(
 	    this.templatePath('sampleFeature.feature'),
-	    this.destinationPath(this.promptAnswers.name+'/tests/features/'),
+	    this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
 	    {api : this.apiDereferenced}
         );
         this.fs.commit(()=>{});
