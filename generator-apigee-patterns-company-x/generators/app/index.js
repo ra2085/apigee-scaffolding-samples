@@ -165,7 +165,7 @@ module.exports = class extends Generator {
                             //resolve(true);
                         }
                     }
-                    //resolve(true);
+                    resolve(true);
                 });
             };
             let evalPath  = (paths, path) => {
@@ -187,7 +187,6 @@ module.exports = class extends Generator {
             };
             nativeObject.then((api) => {
                 this.apiDereferenced = api;
-                conole.log('THIS WILL EVAL');
                 return evalPaths(api);
             }).then((result) => {
                 console.log('NOT RESOLVING');
