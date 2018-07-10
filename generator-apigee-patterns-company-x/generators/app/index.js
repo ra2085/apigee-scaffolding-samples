@@ -101,17 +101,17 @@ module.exports = class extends Generator {
     }
 
     setBasePath(){
-	return new Promise((resolve, reject) => {
-	    SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
-		let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
-		let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
-		var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
-		var result = stylesheet.apply(srcDocument);
-		this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
-		this.fs.commit(()=>{});
-		resolve(true);
-	    })
-	});
+        return new Promise((resolve, reject) => {
+            SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
+                let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
+                let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
+                var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
+                var result = stylesheet.apply(srcDocument);
+                this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
+                this.fs.commit(()=>{});
+                resolve(true);
+            })
+        });
     }
 
     createMock(){
@@ -152,7 +152,6 @@ module.exports = class extends Generator {
                                     if(path[verb].responses['200'].schema){
                                         resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
                                         console.log('schema> '+ JSON.stringify(schema));
-                                        //resolve(true);
                                         });
                                     }
                                 }
@@ -162,7 +161,6 @@ module.exports = class extends Generator {
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
                             Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
-                            //resolve(true);
                         }
                     }
                     resolve(true);
@@ -189,7 +187,6 @@ module.exports = class extends Generator {
                 this.apiDereferenced = api;
                 return evalPaths(api);
             }).then((result) => {
-                console.log('NOT RESOLVING');
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
