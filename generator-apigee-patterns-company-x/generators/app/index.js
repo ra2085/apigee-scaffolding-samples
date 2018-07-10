@@ -169,7 +169,6 @@ module.exports = class extends Generator {
                 });
             };
             let evalPath  = (paths, path) => {
-                return new Promise((resolve, reject) => {
                     let webService = {};
                     webService.latency = 1000;
                     webService.verbs = [];
@@ -180,14 +179,11 @@ module.exports = class extends Generator {
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
                         return evalVerb(paths[path], verb, supportedVerbs, webService.verbs, webService.responses);
                     }));
-                });
             };
             let evalPaths = (api) => {
-                return new Promise((resolve, reject) => {
-                    Promise.all(Object.keys(api.paths).map((path) => {
+                return Promise.all(Object.keys(api.paths).map((path) => {
                     return evalPath(api.paths, path);
-                    }));
-                });
+                }));
             };
             nativeObject.then((api) => {
                 this.apiDereferenced = api;
