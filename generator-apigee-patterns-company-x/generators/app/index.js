@@ -152,7 +152,7 @@ module.exports = class extends Generator {
                                     if(path[verb].responses['200'].schema){
                                         resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
                                         console.log('schema> '+ JSON.stringify(schema));
-                                        resolve(true);
+                                        //resolve(true);
                                         });
                                     }
                                 }
@@ -162,10 +162,10 @@ module.exports = class extends Generator {
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
                             Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
-                            resolve(true);
+                            //resolve(true);
                         }
                     }
-                    resolve(true);
+                    //resolve(true);
                 });
             };
             let evalPath  = (paths, path) => {
