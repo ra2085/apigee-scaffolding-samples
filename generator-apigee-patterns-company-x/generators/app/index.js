@@ -190,14 +190,14 @@ module.exports = class extends Generator {
                 });
             };
             nativeObject.then((api) => {
-                evalPaths(api).then((result) => {
+                this.apiDereferenced = api;
+                return evalPaths(api);
+            }).then((result) => {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
-                    this.apiDereferenced = api;
                     resolve(true);
                 });
-            });
             /*
             nativeObject.then((api)=>{
                 for (let path in api.paths){
