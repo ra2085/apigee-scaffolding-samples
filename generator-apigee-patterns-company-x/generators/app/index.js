@@ -193,6 +193,7 @@ module.exports = class extends Generator {
                 this.apiDereferenced = api;
                 return evalPaths(api);
             }).then((result) => {
+                console.log('NOT RESOLVING');
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
