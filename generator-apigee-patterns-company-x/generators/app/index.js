@@ -145,15 +145,18 @@ module.exports = class extends Generator {
                 return new Promise((resolve, reject) => {
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
-                        if(path[verb].produces.includes('application/json')){
-                            if(path[verb].responses['200']){
-                                if(path[verb].responses['200'].schema){
-                                    resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
-                                    console.log('schema> '+ schema);
-                                    resolve(true);
-                                    });
+                        if(path[verb].produces){
+                            if(path[verb].produces.includes('application/json')){
+                                if(path[verb].responses['200']){
+                                    if(path[verb].responses['200'].schema){
+                                        resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
+                                        console.log('schema> '+ schema);
+                                        resolve(true);
+                                        });
+                                    }
                                 }
                             }
+                        } else {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
@@ -161,6 +164,7 @@ module.exports = class extends Generator {
                             resolve(true);
                         }
                     }
+                    resolve(true);
                 });
             };
             let evalPath  = (paths, path) => {
