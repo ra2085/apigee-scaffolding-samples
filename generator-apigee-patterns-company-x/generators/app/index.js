@@ -4,6 +4,7 @@ var chalk = require('chalk');
 var execSync = require('child_process').execSync;
 var libxslt = require('libxslt');
 var SwaggerParser = require('swagger-parser');
+var jsf = require('json-schema-faker');
 
 module.exports = class extends Generator {
     
