@@ -6,7 +6,7 @@ var libxslt = require('libxslt');
 var SwaggerParser = require('swagger-parser');
 
 module.exports = class extends Generator {
-       
+    
     prompting() {
         
     this.log(require('yosay')('This is a sample implementation for a basic scaffolding tool.'));
@@ -27,6 +27,7 @@ module.exports = class extends Generator {
             SwaggerParser.validate(input+'.yaml').then((api) => {
                 resolve(true);
             }).catch((err) => {
+		console.log(err);
                 resolve('You must provide an existing OpenAPI spec (yaml file in working directory) and the spec MUST be valid');
             });
         });
@@ -98,6 +99,20 @@ module.exports = class extends Generator {
 	this.fs.commit(()=>{});
     }
 
+    setBasePath(){
+	return new Promise((resolve, reject) => {
+	    SwaggerParser.validate(input+'.yaml').then((api) => {
+		let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
+		let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
+		var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
+		var result = stylesheet.apply(srcDocument);
+		this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
+		this.fs.commit(()=>{});
+		resolve(true);
+	    })
+	});
+    }
+
     createMock(){
 	if(this.promptAnswers.createMock){
 	    execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
@@ -123,6 +138,49 @@ module.exports = class extends Generator {
             mockConfig.logRequestHeaders = false;
             let webServices = {};
             let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
+	    let resolveSchema = (schema) => {
+		return jsf.resolve(schema);
+	    };
+	    let evalVerb = (path, verb, supportedVerbs, verbs, responses) => {
+		return new Promise((resolve, reject) => {
+		    if(supportedVerbs.includes(verb.toUpperCase())){
+			verbs.push(verb);
+			if(path[verb].produces.includes('application/json')){
+			    if(path[verb].responses['200']){
+				if(path[verb].responses['200'].schema){
+				    resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
+					console.log('schema> '+ schema);
+					resolve(true);
+				    });
+				}
+			    }
+			    let okResponse = {};
+			    okResponse.httpStatus = 200;
+			    okResponse.mockFile = 'ok.json';
+			    Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
+			    resolve(true);
+			}
+		    }
+		});
+	    };
+	    let evalPath  = (paths, path) => {
+		return new Promise((resolve, reject) => {
+		    let webService = {};
+		    webService.latency = 1000;
+		    webService.verbs = [];
+		    let responses = {};
+		    return Promise.all(Object.keys(paths[path]).map((verb) => {
+			return evalVerb(paths[path], verb, supportedVerbs, webService.verbs, responses);
+		    }));
+		});
+	    };
+	    let evalPaths = (api) => {
+		return new Promise((resolve, reject) => {
+		    Promise.all(Object.keys(api.paths).map((path) => {
+			return evalPath(api.paths, path);
+		    }));
+		});
+	    };
             nativeObject.then((api)=>{
                 for (let path in api.paths){
                     let webService = {};
@@ -138,11 +196,12 @@ module.exports = class extends Generator {
                             Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
                         }
                     }
+		    let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
-                    Object.defineProperty(webServices, path.replace(/\//g,''), {value: webService, writable: true, enumerable: true});
+                    Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                 };
                 Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig));
+                this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                 this.fs.commit(()=>{});
                 this.apiDereferenced = api;
                 resolve(true);
@@ -167,7 +226,7 @@ module.exports = class extends Generator {
     
 	if(this.promptAnswers.publishApi){
 	        this.spawnCommandSync('mvn',
-	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval']);
+	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval -DbasePath='+this.basePath]);
 	}
     }
 };
