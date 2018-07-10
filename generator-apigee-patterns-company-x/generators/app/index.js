@@ -151,7 +151,7 @@ module.exports = class extends Generator {
                                 if(path[verb].responses['200']){
                                     if(path[verb].responses['200'].schema){
                                         resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
-                                        console.log('schema> '+ schema);
+                                        console.log('schema> '+ JSON.stringify(schema));
                                         resolve(true);
                                         });
                                     }
