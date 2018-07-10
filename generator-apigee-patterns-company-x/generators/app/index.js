@@ -101,7 +101,7 @@ module.exports = class extends Generator {
 
     setBasePath(){
 	return new Promise((resolve, reject) => {
-	    SwaggerParser.validate(input+'.yaml').then((api) => {
+	    SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
 		let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
 		let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
 		var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
