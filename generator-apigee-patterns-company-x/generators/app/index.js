@@ -189,19 +189,19 @@ module.exports = class extends Generator {
                 });
             };
             let evalPath  = (paths, path, webService) => {
-                    let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
-                    Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
                         return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses, webService);
                     }));
             };
             let evalPaths = (api) => {
-                let webService = new Object();
+                return Promise.all(Object.keys(api.paths).map((path) => {
+                    let webService = new Object();
                     webService.latency = 1000;
                     webService.verbs = [];
                     webService.responses = new Object();
-                return Promise.all(Object.keys(api.paths).map((path) => {
-                    return evalPath(api.paths, path, webService);
+                    let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
+                    webServices[pathForMocker] = webService;
+                    return evalPath(api.paths, path, webServices[pathForMocker]);
                 }));
             };
             nativeObject.then((api) => {
