@@ -247,7 +247,7 @@ module.exports = class extends Generator {
 			    }
 			    resolve(true);
 			});
-				      };
+            };
 		    let evalPath  = (paths, path) => {
 			return Promise.all(Object.keys(paths[path]).map((verb) => {
 			    return evalVerb(path, paths[path], verb);
