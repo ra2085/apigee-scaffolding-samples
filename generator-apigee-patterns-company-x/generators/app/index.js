@@ -243,6 +243,7 @@ module.exports = class extends Generator {
                                     return new Promise((resolve, reject) => {console.log('4');
                                         if(parameter.in === 'body'){console.log('5');
                                             if(parameter.schema){console.log('6');
+                                                console.log(JSON.stringify(parameter.schema, null, 4));
                                                 resolveSchema(parameter.schema).then((esq) => {
                                                     console.log(JSON.stringify(parameter, null, 4));
                                                     console.log(JSON.stringify(esq, null, 4));
