@@ -164,7 +164,7 @@ module.exports = class extends Generator {
 						mockResponse.httpStatus = Number(response);
 						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
 						mockResponse.mockFile = key+'.json';
-                        response.tester = {};
+                        responses.tester = {};
 						Object.defineProperty(responses, verb, {value: mockResponse, writable: true, enumerable: true});
 						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
 						return Promise.resolve(true);
