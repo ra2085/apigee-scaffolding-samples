@@ -156,7 +156,7 @@ module.exports = class extends Generator {
 				return this.apiProduces.includes('application/json');
 			    }
 			};
-                        if(useJsonSchemas() && path[verb].responses){
+            if(useJsonSchemas() && path[verb].responses){
 			    Promise.all(Object.keys(path[verb].responses).map((response) => {
 				let mockResponse = {};
 					if(path[verb].responses[response].schema){
@@ -169,6 +169,10 @@ module.exports = class extends Generator {
 						return Promise.resolve(true);
 					    });
 					} else {
+                        let okResponse = {};
+                            okResponse.httpStatus = 200;
+                            okResponse.mockFile = 'ok.json';
+                            Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
 					    return Promise.resolve(true);
 					}
     			    })).then((resolved) => {
