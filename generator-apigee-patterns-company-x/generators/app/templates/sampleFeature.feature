@@ -7,7 +7,7 @@ Feature:
         Given I set User-Agent header to apickli
         <%- tm %>
         <% if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){%>
-        <% if(parameterMap.get(path+verb)){ %>
+        <% if(parameterMap[path+verb]){ %>
         And I set Content-Type header to application/json
         And I set body to <%- parameterMap[path+verb] %>
         <% } %>
