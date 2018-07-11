@@ -111,7 +111,7 @@ module.exports = class extends Generator {
                 var result = stylesheet.apply(srcDocument);
                 this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
                 this.fs.commit(()=>{});console.log('7');
-                return resolve(true);
+                resolve(true);
             })
         });
     }
