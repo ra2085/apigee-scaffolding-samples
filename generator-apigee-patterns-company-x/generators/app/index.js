@@ -227,7 +227,7 @@ module.exports = class extends Generator {
                 let resolveSchema = (schema) => {
                     return jsf.resolve(schema);
                 };
-                let evalVerb = (pathString, path, verb, map) => {
+                let evalVerb = (pathString, path, verb) => {
                     return new Promise((resolve, reject) => {
                         if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
                             let useJsonSchemas = () => {
@@ -241,17 +241,15 @@ module.exports = class extends Generator {
                             if(useJsonSchemas() && path[verb].parameters){console.log('2');
                                 Promise.all(path[verb].parameters.map((parameter) => {console.log('3');
                                     return new Promise((resolve, reject) => {console.log('4');
-                                        if(parameter.in === 'body'){console.log('5');
-                                            if(parameter.schema){console.log('6');
+                                        if(parameter.in === 'body' && parameter.schema){console.log('5');
+                                                console.log('6');
                                                 console.log(JSON.stringify(parameter.schema, null, 4));
                                                 resolveSchema(parameter.schema).then((esq) => {
                                                     console.log(JSON.stringify(parameter, null, 4));
                                                     console.log(JSON.stringify(esq, null, 4));
-                                                    map[pathString+verb] = esq;console.log(''+pathString+verb);
-                                                    console.log(JSON.stringify(map, null, 4));
+                                                    parameterMap[pathString+verb] = esq;console.log(''+pathString+verb);
                                                     resolve(true);
                                                 });
-                                            } else {resolve(true);}
                                         } else {resolve(true);}
                                     });
                                 })).then((resolved) => {resolve(true)});
@@ -262,19 +260,19 @@ module.exports = class extends Generator {
                         resolve(true);
                     });
                 };
-                let evalPath  = (paths, path, map) => {
+                let evalPath  = (paths, path) => {
                 return Promise.all(Object.keys(paths[path]).map((verb) => {
-                    return evalVerb(path, paths[path], verb, map);
+                    return evalVerb(path, paths[path], verb);
                 }));
                 };
-                let evalPaths = (api, map) => {
+                let evalPaths = (api) => {
                 return Promise.all(Object.keys(api.paths).map((path) => {
-                    return evalPath(api.paths, path, map);
+                    return evalPath(api.paths, path);
                 }));
                 };
-                evalPaths(this.apiDereferenced, parameterMap).then((resolved) => {
+                evalPaths(this.apiDereferenced).then((resolved) => {
                     execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
-                    console.log(JSON.stringify(parameterMap, null, 4));
+                    console.log('---------'+JSON.stringify(parameterMap, null, 4));
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
