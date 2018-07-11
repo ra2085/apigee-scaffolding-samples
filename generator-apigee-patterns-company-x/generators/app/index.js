@@ -192,8 +192,7 @@ module.exports = class extends Generator {
                     let webService = {};
                     webService.latency = 1000;
                     webService.verbs = [];
-                    let responses = {};
-                    Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
+                    webService.responses = {};
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
