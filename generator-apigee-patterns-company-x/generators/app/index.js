@@ -159,26 +159,27 @@ module.exports = class extends Generator {
                         };
                         if(useJsonSchemas() && path[verb].responses){
                             Promise.all(Object.keys(path[verb].responses).map((response) => {
-                                console.log(JSON.stringify(path[verb].responses[response].schema));
-                                
-                                console.log(response != 'default');
-                                if(path[verb].responses[response].schema && response != 'default'){
-                                    let mockResponse = {};
-                                    resolveSchema(path[verb].responses[response].schema).then((schema)=>{
-                                    mockResponse.httpStatus = Number(response);
-                                    let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
-                                    mockResponse.mockFile = key+'.json';
-                                    responses[verb] = mockResponse;
-                                    this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));console.log('4');
-                                    return Promise.resolve(true);
-                                    });
-                                } else {
-                                    let okResponse = {};
-                                    okResponse.httpStatus = 200;
-                                    okResponse.mockFile = 'ok.json';
-                                    responses[verb] = okResponse;console.log('1');
-                                    return Promise.resolve(true);
-                                }
+                                return new Promise((resolve, reject) => {
+                                    console.log(JSON.stringify(path[verb].responses[response].schema));
+                                    console.log(response != 'default');
+                                    if(path[verb].responses[response].schema && response != 'default'){
+                                        let mockResponse = {};
+                                        resolveSchema(path[verb].responses[response].schema).then((schema)=>{
+                                        mockResponse.httpStatus = Number(response);
+                                        let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
+                                        mockResponse.mockFile = key+'.json';
+                                        responses[verb] = mockResponse;
+                                        this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));console.log('4');
+                                        resolve(true);
+                                        });
+                                    } else {
+                                        let okResponse = {};
+                                        okResponse.httpStatus = 200;
+                                        okResponse.mockFile = 'ok.json';
+                                        responses[verb] = okResponse;console.log('1');
+                                        resolve(true);
+                                    }
+                                });
                             })).then((resp) => {resolve(true);});
                         } else {
                             let okResponse = {};
