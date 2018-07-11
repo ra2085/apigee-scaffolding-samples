@@ -224,6 +224,9 @@ module.exports = class extends Generator {
 	if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
             return new Promise((resolve, reject) => {
                 let parameterMap = new Object();
+                let resolveSchema = (schema) => {
+                    return jsf.resolve(schema);
+                };
                 let evalVerb = (pathString, path, verb, map) => {
                     return new Promise((resolve, reject) => {
                         if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
@@ -240,10 +243,10 @@ module.exports = class extends Generator {
                                     return new Promise((resolve, reject) => {console.log('4');
                                         if(parameter.in === 'body'){console.log('5');
                                             if(parameter.schema){console.log('6');
-                                                jsf.resolve(parameter.schema).then((resolved) => {
+                                                resolveSchema(parameter.schema).then((esq) => {
                                                     console.log(JSON.stringify(parameter, null, 4));
-                                                    console.log(JSON.stringify(resolved, null, 4));
-                                                    map[pathString+verb] = resolved;console.log(''+pathString+verb);
+                                                    console.log(JSON.stringify(esq, null, 4));
+                                                    map[pathString+verb] = esq;console.log(''+pathString+verb);
                                                     console.log(JSON.stringify(map, null, 4));
                                                     resolve(true);
                                                 });
