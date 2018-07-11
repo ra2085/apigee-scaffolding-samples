@@ -133,13 +133,13 @@ module.exports = class extends Generator {
         if(this.promptAnswers.createMock){
         return new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
-            let mockConfig = {};
+            let mockConfig = new Object();;
             mockConfig.mockDirectory = './mock';
             mockConfig.quiet = false;
             mockConfig.port = '8000';
             mockConfig.latency = 50;
             mockConfig.logRequestHeaders = false;
-            let webServices = {};
+            let webServices = new Object();
             let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
@@ -164,7 +164,6 @@ module.exports = class extends Generator {
 						mockResponse.httpStatus = Number(response);
 						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
 						mockResponse.mockFile = key+'.json';
-                        responses.tester = {};
 						Object.defineProperty(responses, verb, {value: mockResponse, writable: true, enumerable: true});
 						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
 						return Promise.resolve(true);
@@ -190,10 +189,10 @@ module.exports = class extends Generator {
                 });
             };
             let evalPath  = (paths, path) => {
-                    let webService = {};
+                    let webService = new Object();
                     webService.latency = 1000;
                     webService.verbs = [];
-                    webService.responses = {};
+                    webService.responses = new Object();
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
