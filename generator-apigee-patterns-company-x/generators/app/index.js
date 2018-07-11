@@ -103,6 +103,8 @@ module.exports = class extends Generator {
     setBasePath(){
         return new Promise((resolve, reject) => {
             SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
+		this.apiProduces = api.produces;
+		this.apiConsumes = api.consumes;
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
                 var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
@@ -142,21 +144,37 @@ module.exports = class extends Generator {
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
             };
-            let evalVerb = (path, verb, supportedVerbs, verbs, responses) => {
+            let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
                 return new Promise((resolve, reject) => {
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
-                        if(path[verb].produces){
-                            if(path[verb].produces.includes('application/json')){
-                                if(path[verb].responses['200']){
-                                    if(path[verb].responses['200'].schema){
-                                        resolveSchema(path[verb].responses['200'].schema).then((schema)=>{
-                                        console.log('schema> '+ JSON.stringify(schema));
-                                        });
-                                    }
-                                }
-                            }
-                        } else {
+			let useJsonSchemas = () => {
+			    if(path[verb].produces){
+				return path[verb].produces.includes('application/json');
+			    }
+			    if(this.apiProduces){
+				return this.apiProduces.includes('application/json');
+			    }
+			};
+                        if(useJsonSchemas() && path[verb].responses){
+			    Promise.all(Object.keys(path[verb].responses).map((response) => {
+				let mockResponse = {};
+					if(path[verb].responses[response].schema){
+					    resolveSchema(path[verb].responses[response].schema).then((schema)=>{
+						mockResponse.httpStatus = Number(response);
+						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
+						mockResponse.mockFile = key+'.json';
+						Object.defineProperty(responses, verb, {value: mockResponse, writable: true, enumerable: true});
+						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
+						return Promise.resolve(true);
+					    });
+					} else {
+					    return Promise.resolve(true);
+					}
+    			    })).then((resolved) => {
+				resolve(true);
+			    });
+			} else {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
@@ -175,7 +193,7 @@ module.exports = class extends Generator {
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
-                        return evalVerb(paths[path], verb, supportedVerbs, webService.verbs, webService.responses);
+                        return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses);
                     }));
             };
             let evalPaths = (api) => {
@@ -192,45 +210,65 @@ module.exports = class extends Generator {
                     this.fs.commit(()=>{});
                     resolve(true);
                 });
-            /*
-            nativeObject.then((api)=>{
-                for (let path in api.paths){
-                    let webService = {};
-                    webService.latency = 1000;
-                    webService.verbs = [];
-                    let okResponse = {};
-                    okResponse.httpStatus = 200;
-                    okResponse.mockFile = 'ok.json';
-                    let responses = {};
-                    for (let verb in api.paths[path]){
-                        if(supportedVerbs.includes(verb.toUpperCase())){
-                            webService.verbs.push(verb);
-                            Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
-                        }
-                    }
-                    let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
-                    Object.defineProperty(webService, 'responses', {value: responses, writable: true, enumerable: true});
-                    Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
-                }
-                Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
-                this.fs.commit(()=>{});
-                this.apiDereferenced = api;
-                resolve(true);
-            });*/
-        });
+            });
         }
     }
 
     createTests(){
-    if(this.promptAnswers.publishApi && this.promptAnswers.createMock){    
-        execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
-        this.fs.copyTpl(
-	    this.templatePath('sampleFeature.feature'),
-	    this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-	    {api : this.apiDereferenced}
-        );
-        this.fs.commit(()=>{});
+	if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
+            return new Promise((resolve, reject) => {
+		let parameterMap = new Map();
+		let evalVerb = (pathString, path, verb) => {
+		    return new Promise((resolve, reject) => {
+			if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
+			    let useJsonSchemas = () => {
+				if(api.paths[path][verb].consumes){
+				    return api.paths[path][verb].consumes.includes('application/json');
+				}
+				if(this.apiConsumes){
+				    return this.apiConsumes.includes('application/json');
+				}
+			    };
+			    if(useJsonSchemas() && path[verb].parameters){
+				Promise.all(path[verb].parameters).map((parameter) => {
+				    if(parameter.in === 'body'){
+					if(parameter.schema){
+					    jsf.resolve(parameter.schema).then((resolved) => {
+						parameterMap.set(pathString+verb, resolved);
+						Promise.resolve(true);
+					    });
+					}
+				    }
+				    return Promise.resolve(true);
+				}).then((resolved) => {resolve(true)});
+					   } else {
+					       return Promise.resolve(true);
+					   }
+			    }
+			    resolve(true);
+			});
+				      };
+		    let evalPath  = (paths, path) => {
+			return Promise.all(Object.keys(paths[path]).map((verb) => {
+			    return evalVerb(path, paths[path], verb);
+			}));
+		    };
+		    let evalPaths = (api) => {
+			return Promise.all(Object.keys(api.paths).map((path) => {
+			    return evalPath(api.paths, path);
+			}));
+		    };
+		    evalPaths(this.apiDereferenced).then((resolved) => {
+			execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+			this.fs.copyTpl(
+			    this.templatePath('sampleFeature.feature'),
+			    this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
+			    {api : this.apiDereferenced, parameterMap : parameterMap}
+			);
+			this.fs.commit(()=>{});
+			resolve(true);
+		    });
+		});
     }
     }
     
@@ -238,7 +276,7 @@ module.exports = class extends Generator {
     
 	if(this.promptAnswers.publishApi){
 	        this.spawnCommandSync('mvn',
-	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval -DbasePath='+this.basePath]);
+	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval', '-DbasePath='+this.basePath]);
 	}
     }
 };

@@ -1,6 +1,6 @@
 Feature:
 	As an API consumer I should be able to call an available resource.
-<% JSON.stringify(api, null, 4); %>
+
     <% for (let path in api.paths){ %>
     <% for (let verb in api.paths[path]){ %>
 	Scenario: Should get a successful response from <%- path %>
