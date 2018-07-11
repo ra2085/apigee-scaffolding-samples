@@ -236,7 +236,7 @@ module.exports = class extends Generator {
                                 }
                             };
                             if(useJsonSchemas() && path[verb].parameters){
-                                Promise.all(path[verb].parameters).map((parameter) => {
+                                Promise.all(Object.keys(path[verb].parameters).map((parameter) => {
                                     return new Promise((resolve, reject) => {
                                         if(parameter.in === 'body'){
                                             if(parameter.schema){
@@ -247,7 +247,7 @@ module.exports = class extends Generator {
                                             } else {resolve(true);}
                                         } else {resolve(true);}
                                     });
-                                }).then((resolved) => {resolve(true)});
+                                })).then((resolved) => {resolve(true)});
                             } else {
                                 resolve(true);
                             }
