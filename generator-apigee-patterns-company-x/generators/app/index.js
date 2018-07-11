@@ -241,6 +241,8 @@ module.exports = class extends Generator {
                                         if(parameter.in === 'body'){console.log('5');
                                             if(parameter.schema){console.log('6');
                                                 jsf.resolve(parameter.schema).then((resolved) => {
+                                                    console.log(JSON.stringify(parameter, null, 4));
+                                                    console.log(JSON.stringify(resolved, null, 4));
                                                     map[pathString+verb] = resolved;console.log(''+pathString+verb);
                                                     console.log(JSON.stringify(map, null, 4));
                                                     resolve(true);
