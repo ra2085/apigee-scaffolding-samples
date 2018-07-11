@@ -9,7 +9,7 @@ Feature:
         <% if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){%>
         <% if(parameterMap.get(path+verb)){ %>
         And I set Content-Type header to application/json
-        And I set body to <%- parameterMap.get(path+verb) %>
+        And I set body to <%- parameterMap[path+verb] %>
         <% } %>
         <% } %>
             When I <%- verb.toUpperCase() %> <%- path %>
