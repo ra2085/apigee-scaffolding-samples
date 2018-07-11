@@ -103,15 +103,15 @@ module.exports = class extends Generator {
     setBasePath(){
         return new Promise((resolve, reject) => {
             SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
-		this.apiProduces = api.produces;
-		this.apiConsumes = api.consumes;
+                this.apiProduces = api.produces;
+                this.apiConsumes = api.consumes;
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
                 var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
                 var result = stylesheet.apply(srcDocument);
                 this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
                 this.fs.commit(()=>{});
-                resolve(true);
+                return Promise.resolve(true);
             })
         });
     }
@@ -165,14 +165,14 @@ module.exports = class extends Generator {
                                     let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
                                     mockResponse.mockFile = key+'.json';
                                     responses[verb] = mockResponse;
-                                    this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
+                                    this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));console.log('4');
                                     return Promise.resolve(true);
                                     });
                                 } else {
                                     let okResponse = {};
                                     okResponse.httpStatus = 200;
                                     okResponse.mockFile = 'ok.json';
-                                    responses[verb] = okResponse;
+                                    responses[verb] = okResponse;console.log('1');
                                     return Promise.resolve(true);
                                 }
                             }));
@@ -180,10 +180,10 @@ module.exports = class extends Generator {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
-                            responses[verb] = okResponse;
+                            responses[verb] = okResponse;console.log('2');
                             return Promise.resolve(true);
                         }
-                    } else {
+                    } else {console.log('3');
                         return Promise.resolve(true);
                     }
                 });
@@ -211,7 +211,7 @@ module.exports = class extends Generator {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     console.log(JSON.stringify(mockConfig, null, 4));
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
-                    this.fs.commit(()=>{});
+                    this.fs.commit(()=>{});console.log('6');
                     resolve(true);
                 });
             });
