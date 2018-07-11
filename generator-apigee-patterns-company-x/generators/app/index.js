@@ -223,59 +223,60 @@ module.exports = class extends Generator {
     createTests(){
 	if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
             return new Promise((resolve, reject) => {
-		let parameterMap = new Map();
-		let evalVerb = (pathString, path, verb) => {
-		    return new Promise((resolve, reject) => {
-			if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
-			    let useJsonSchemas = () => {
-				if(api.paths[path][verb].consumes){
-				    return api.paths[path][verb].consumes.includes('application/json');
-				}
-				if(this.apiConsumes){
-				    return this.apiConsumes.includes('application/json');
-				}
-			    };
-			    if(useJsonSchemas() && path[verb].parameters){
-				Promise.all(path[verb].parameters).map((parameter) => {
-				    if(parameter.in === 'body'){
-					if(parameter.schema){
-					    jsf.resolve(parameter.schema).then((resolved) => {
-						parameterMap.set(pathString+verb, resolved);
-						Promise.resolve(true);
-					    });
-					}
-				    }
-				    return Promise.resolve(true);
-				}).then((resolved) => {resolve(true)});
-					   } else {
-					       return Promise.resolve(true);
-					   }
-			    }
-			    resolve(true);
-			});
-            };
-		    let evalPath  = (paths, path) => {
-			return Promise.all(Object.keys(paths[path]).map((verb) => {
-			    return evalVerb(path, paths[path], verb);
-			}));
-		    };
-		    let evalPaths = (api) => {
-			return Promise.all(Object.keys(api.paths).map((path) => {
-			    return evalPath(api.paths, path);
-			}));
-		    };
-		    evalPaths(this.apiDereferenced).then((resolved) => {
-			execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
-			this.fs.copyTpl(
-			    this.templatePath('sampleFeature.feature'),
-			    this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-			    {api : this.apiDereferenced, parameterMap : parameterMap}
-			);
-			this.fs.commit(()=>{});
-			resolve(true);
-		    });
-		});
-    }
+                let parameterMap = new Map();
+                let evalVerb = (pathString, path, verb) => {
+                    return new Promise((resolve, reject) => {
+                        if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
+                            let useJsonSchemas = () => {
+                                if(path[verb].consumes){
+                                    return path[verb].consumes.includes('application/json');
+                                }
+                                if(this.apiConsumes){
+                                    return this.apiConsumes.includes('application/json');
+                                }
+                            };
+                            if(useJsonSchemas() && path[verb].parameters){
+                                Promise.all(path[verb].parameters).map((parameter) => {
+                                    return new Promise((resolve, reject) => {
+                                        if(parameter.in === 'body'){
+                                            if(parameter.schema){
+                                                jsf.resolve(parameter.schema).then((resolved) => {
+                                                    parameterMap.set(pathString+verb, resolved);
+                                                    resolve(true);
+                                                });
+                                            } else {resolve(true);}
+                                        } else {resolve(true);}
+                                    });
+                                }).then((resolved) => {resolve(true)});
+                            } else {
+                                resolve(true);
+                            }
+                        }
+                        resolve(true);
+                    });
+                };
+                let evalPath  = (paths, path) => {
+                return Promise.all(Object.keys(paths[path]).map((verb) => {
+                    return evalVerb(path, paths[path], verb);
+                }));
+                };
+                let evalPaths = (api) => {
+                return Promise.all(Object.keys(api.paths).map((path) => {
+                    return evalPath(api.paths, path);
+                }));
+                };
+                evalPaths(this.apiDereferenced).then((resolved) => {
+                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+                    this.fs.copyTpl(
+                        this.templatePath('sampleFeature.feature'),
+                        this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
+                        {api : this.apiDereferenced, parameterMap : parameterMap}
+                    );
+                    this.fs.commit(()=>{});
+                    resolve(true);
+                });
+            });
+        }
     }
     
     publishApi(){
