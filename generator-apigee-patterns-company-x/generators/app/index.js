@@ -270,7 +270,7 @@ module.exports = class extends Generator {
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-                        {api : this.apiDereferenced, parameterMap : parameterMap}
+                        {api : this.apiDereferenced, parameterMap : parameterMap, tm : JSON.stringify(parameterMap, null, 4)}
                     );
                     this.fs.commit(()=>{});
                     resolve(true);
