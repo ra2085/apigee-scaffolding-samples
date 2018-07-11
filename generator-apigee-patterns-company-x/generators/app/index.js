@@ -256,8 +256,9 @@ module.exports = class extends Generator {
                             } else {
                                 resolve(true);
                             }
+                        } else {
+                            resolve(true);
                         }
-                        resolve(true);
                     });
                 };
                 let evalPath  = (paths, path) => {
