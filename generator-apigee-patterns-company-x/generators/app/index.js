@@ -144,48 +144,48 @@ module.exports = class extends Generator {
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
             };
-            let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses, webService) => {
+            let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
                 return new Promise((resolve, reject) => {
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
-			let useJsonSchemas = () => {
-			    if(path[verb].produces){
-				return path[verb].produces.includes('application/json');
-			    }
-			    if(this.apiProduces){
-				return this.apiProduces.includes('application/json');
-			    }
-			};
-            if(useJsonSchemas() && path[verb].responses){
-			    Promise.all(Object.keys(path[verb].responses).map((response) => {
-					if(path[verb].responses[response].schema){
-                        let mockResponse = {};
-					    resolveSchema(path[verb].responses[response].schema).then((schema)=>{
-						mockResponse.httpStatus = Number(response);
-						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
-						mockResponse.mockFile = key+'.json';
-                        webService.responses[verb] = mockResponse;
-						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
-						return Promise.resolve(true);
-					    });
-					} else {
-                        let okResponse = {};
-                            okResponse.httpStatus = 200;
-                            okResponse.mockFile = 'ok.json';
-                            Object.defineProperty(webServce.responses, verb, {value: okResponse, writable: true, enumerable: true});
-					    return Promise.resolve(true);
-					}
-    			    })).then((resolved) => {
-				resolve(true);
-			    });
-			} else {
+                        let useJsonSchemas = () => {
+                            if(path[verb].produces){
+                            return path[verb].produces.includes('application/json');
+                            }
+                            if(this.apiProduces){
+                            return this.apiProduces.includes('application/json');
+                            }
+                        };
+                        if(useJsonSchemas() && path[verb].responses){
+                            Promise.all(Object.keys(path[verb].responses).map((response) => {
+                                if(path[verb].responses[response].schema && response !== 'default'){
+                                    let mockResponse = {};
+                                    resolveSchema(path[verb].responses[response].schema).then((schema)=>{
+                                    mockResponse.httpStatus = Number(response);
+                                    let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
+                                    mockResponse.mockFile = key+'.json';
+                                    responses[verb] = mockResponse;
+                                    this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
+                                    return Promise.resolve(true);
+                                    });
+                                } else {
+                                    let okResponse = {};
+                                    okResponse.httpStatus = 200;
+                                    okResponse.mockFile = 'ok.json';
+                                    responses[verb] = okResponse;
+                                    return Promise.resolve(true);
+                                }
+                            }));
+                        } else {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
-                            Object.defineProperty(webService.responses, verb, {value: okResponse, writable: true, enumerable: true});
+                            responses[verb] = okResponse;
+                            return Promise.resolve;
                         }
+                    } else {
+                        return Promise.resolve(true);
                     }
-                    resolve(true);
                 });
             };
             let evalPath  = (paths, path, webService) => {
@@ -209,6 +209,7 @@ module.exports = class extends Generator {
                 return evalPaths(api);
             }).then((result) => {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
+                    console.log(JSON.stringify(mockConfig, null, 4));
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
                     resolve(true);
