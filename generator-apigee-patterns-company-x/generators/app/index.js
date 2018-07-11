@@ -234,14 +234,14 @@ module.exports = class extends Generator {
                                 if(this.apiConsumes){
                                     return this.apiConsumes.includes('application/json');
                                 }
-                            };
-                            if(useJsonSchemas() && path[verb].parameters){
-                                Promise.all(path[verb].parameters.map((parameter) => {
-                                    return new Promise((resolve, reject) => {
-                                        if(parameter.in === 'body'){
-                                            if(parameter.schema){
+                            };console.log('1');
+                            if(useJsonSchemas() && path[verb].parameters){console.log('2');
+                                Promise.all(path[verb].parameters.map((parameter) => {console.log('3');
+                                    return new Promise((resolve, reject) => {console.log('4');
+                                        if(parameter.in === 'body'){console.log('5');
+                                            if(parameter.schema){console.log('6');
                                                 jsf.resolve(parameter.schema).then((resolved) => {
-                                                    parameterMap.set(pathString+verb, resolved);
+                                                    parameterMap.set(pathString+verb, resolved);console.log(''+pathString+verb);
                                                     resolve(true);
                                                 });
                                             } else {resolve(true);}
