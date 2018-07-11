@@ -224,7 +224,7 @@ module.exports = class extends Generator {
 	if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
             return new Promise((resolve, reject) => {
                 let parameterMap = new Map();
-                let evalVerb = (pathString, path, verb) => {
+                let evalVerb = (pathString, path, verb, map) => {
                     return new Promise((resolve, reject) => {
                         if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
                             let useJsonSchemas = () => {
@@ -241,7 +241,8 @@ module.exports = class extends Generator {
                                         if(parameter.in === 'body'){console.log('5');
                                             if(parameter.schema){console.log('6');
                                                 jsf.resolve(parameter.schema).then((resolved) => {
-                                                    parameterMap.set(pathString+verb, resolved);console.log(''+pathString+verb);
+                                                    map.set(pathString+verb, resolved);console.log(''+pathString+verb);
+                                                    console.log(JSON.stringify(map, null, 4));
                                                     resolve(true);
                                                 });
                                             } else {resolve(true);}
@@ -255,22 +256,23 @@ module.exports = class extends Generator {
                         resolve(true);
                     });
                 };
-                let evalPath  = (paths, path) => {
+                let evalPath  = (paths, path, map) => {
                 return Promise.all(Object.keys(paths[path]).map((verb) => {
-                    return evalVerb(path, paths[path], verb);
+                    return evalVerb(path, paths[path], verb, map);
                 }));
                 };
-                let evalPaths = (api) => {
+                let evalPaths = (api, map) => {
                 return Promise.all(Object.keys(api.paths).map((path) => {
-                    return evalPath(api.paths, path);
+                    return evalPath(api.paths, path, map);
                 }));
                 };
-                evalPaths(this.apiDereferenced).then((resolved) => {
+                evalPaths(this.apiDereferenced, parameterMap).then((resolved) => {
                     execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+                    console.log(JSON.stringify(map, null, 4));
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-                        {api : this.apiDereferenced, parameterMap : parameterMap, tm : JSON.stringify(parameterMap, null, 4)}
+                        {api : this.apiDereferenced, parameterMap : map, tm : JSON.stringify(map, null, 4)}
                     );
                     this.fs.commit(()=>{});
                     resolve(true);
