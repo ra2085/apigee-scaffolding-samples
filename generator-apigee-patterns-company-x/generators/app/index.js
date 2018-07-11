@@ -105,12 +105,13 @@ module.exports = class extends Generator {
             SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
                 this.apiProduces = api.produces;
                 this.apiConsumes = api.consumes;
+                this.basePath = api.basePath;
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
                 var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
                 var result = stylesheet.apply(srcDocument);
                 this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
-                this.fs.commit(()=>{});console.log('7');
+                this.fs.commit(()=>{});
                 resolve(true);
             })
         });
@@ -126,12 +127,11 @@ module.exports = class extends Generator {
 	    var result = stylesheet.apply(srcDocument);
 	    this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', result);
 	    this.fs.commit(()=>{});
-        console.log('8');
 	}
     }
 
     createMockServer(){
-        if(this.promptAnswers.createMock){console.log('9');
+        if(this.promptAnswers.createMock){
         return new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
             let mockConfig = new Object();;
@@ -144,9 +144,9 @@ module.exports = class extends Generator {
             let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
-            };console.log('10');
+            };
             let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
-                return new Promise((resolve, reject) => {console.log('16');
+                return new Promise((resolve, reject) => {
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
                         let useJsonSchemas = () => {
@@ -160,8 +160,6 @@ module.exports = class extends Generator {
                         if(useJsonSchemas() && path[verb].responses){
                             Promise.all(Object.keys(path[verb].responses).map((response) => {
                                 return new Promise((resolve, reject) => {
-                                    console.log(JSON.stringify(path[verb].responses[response].schema));
-                                    console.log(response != 'default');
                                     if(path[verb].responses[response].schema && response != 'default'){
                                         let mockResponse = {};
                                         resolveSchema(path[verb].responses[response].schema).then((schema)=>{
@@ -169,14 +167,14 @@ module.exports = class extends Generator {
                                         let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
                                         mockResponse.mockFile = key+'.json';
                                         responses[verb] = mockResponse;
-                                        this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));console.log('4');
+                                        this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
                                         resolve(true);
                                         });
                                     } else {
                                         let okResponse = {};
                                         okResponse.httpStatus = 200;
                                         okResponse.mockFile = 'ok.json';
-                                        responses[verb] = okResponse;console.log('1');
+                                        responses[verb] = okResponse;
                                         resolve(true);
                                     }
                                 });
@@ -185,22 +183,22 @@ module.exports = class extends Generator {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
-                            responses[verb] = okResponse;console.log('2');
+                            responses[verb] = okResponse;
                             resolve(true);
                         }
-                    } else {console.log('3');
+                    } else {
                         resolve(true);
                     }
                 });
             };
-            let evalPath  = (paths, path, webService) => {console.log('14');
-                    return Promise.all(Object.keys(paths[path]).map((verb) => {console.log('15');
+            let evalPath  = (paths, path, webService) => {
+                    return Promise.all(Object.keys(paths[path]).map((verb) => {
                         return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses, webService);
                     }));
             };
-            let evalPaths = (api) => {console.log('11');
+            let evalPaths = (api) => {
                 return Promise.all(Object.keys(api.paths).map((path) => {
-                    let webService = new Object();console.log('12');
+                    let webService = new Object();
                     webService.latency = 1000;
                     webService.verbs = [];
                     webService.responses = new Object();
@@ -214,9 +212,8 @@ module.exports = class extends Generator {
                 return evalPaths(api);
             }).then((result) => {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                    console.log(JSON.stringify(mockConfig, null, 4));
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
-                    this.fs.commit(()=>{});console.log('6');
+                    this.fs.commit(()=>{});
                     resolve(true);
                 });
             });
