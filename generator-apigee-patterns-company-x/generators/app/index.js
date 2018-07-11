@@ -176,7 +176,7 @@ module.exports = class extends Generator {
                                     responses[verb] = okResponse;console.log('1');
                                     return Promise.resolve(true);
                                 }
-                            }));
+                            })).then((resp) => {resolve(true);});
                         } else {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
