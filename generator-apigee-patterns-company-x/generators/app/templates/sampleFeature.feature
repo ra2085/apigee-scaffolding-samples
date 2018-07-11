@@ -13,11 +13,11 @@ Feature:
         <% } %>
             When I <%- verb.toUpperCase() %> <%- path %>
             <% if(api.paths[path][verb].responses){%>
-            <% if(Object.keys(api.paths[path][verb].responses).contains('200')){%>
+            <% if(Object.keys(api.paths[path][verb].responses).includes('200')){%>
             Then response code should be 200
-            <% } else if(Object.keys(api.paths[path][verb].responses).contains('201')) {%>
+            <% } else if(Object.keys(api.paths[path][verb].responses).includes('201')) {%>
             Then response code should be 201
-            <% } else if(Object.keys(api.paths[path][verb].responses).contains('204')) {%>
+            <% } else if(Object.keys(api.paths[path][verb].responses).includes('204')) {%>
             Then response code should be 204
             <% } %>
             <% } %>
