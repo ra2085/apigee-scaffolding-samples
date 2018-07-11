@@ -164,9 +164,7 @@ module.exports = class extends Generator {
 						mockResponse.httpStatus = Number(response);
 						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
 						mockResponse.mockFile = key+'.json';
-						//Object.defineProperty(webService.responses, verb, {value: mockResponse, writable: true, enumerable: true});
                         webService.responses[verb] = mockResponse;
-                        console.log(JSON.stringify(webService.responses, null, 4));
 						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
 						return Promise.resolve(true);
 					    });
@@ -190,11 +188,7 @@ module.exports = class extends Generator {
                     resolve(true);
                 });
             };
-            let evalPath  = (paths, path) => {
-                    let webService = new Object();
-                    webService.latency = 1000;
-                    webService.verbs = [];
-                    webService.responses = new Object();
+            let evalPath  = (paths, path, webService) => {
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
@@ -202,8 +196,12 @@ module.exports = class extends Generator {
                     }));
             };
             let evalPaths = (api) => {
+                let webService = new Object();
+                    webService.latency = 1000;
+                    webService.verbs = [];
+                    webService.responses = new Object();
                 return Promise.all(Object.keys(api.paths).map((path) => {
-                    return evalPath(api.paths, path);
+                    return evalPath(api.paths, path, webService);
                 }));
             };
             nativeObject.then((api) => {
