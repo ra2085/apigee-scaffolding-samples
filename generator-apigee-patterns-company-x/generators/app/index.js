@@ -182,10 +182,10 @@ module.exports = class extends Generator {
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
                             responses[verb] = okResponse;console.log('2');
-                            return Promise.resolve(true);
+                            resolve(true);
                         }
                     } else {console.log('3');
-                        return Promise.resolve(true);
+                        resolve(true);
                     }
                 });
             };
