@@ -161,7 +161,7 @@ module.exports = class extends Generator {
                             Promise.all(Object.keys(path[verb].responses).map((response) => {
                                 console.log(JSON.stringify(path[verb].responses[response].schema));
                                 
-                                console.log(response != 'default'));
+                                console.log(response != 'default');
                                 if(path[verb].responses[response].schema && response != 'default'){
                                     let mockResponse = {};
                                     resolveSchema(path[verb].responses[response].schema).then((schema)=>{
