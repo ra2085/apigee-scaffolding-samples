@@ -11,7 +11,7 @@ Feature:
         And I set body to <%- JSON.stringify(parameterMap[path+verb]) %>
         <% } %>
         <% } %>
-            When I <%- verb.toUpperCase() %> <%- path %>
+            When I <%- verb.toUpperCase() %> to <%- path %>
             <% if(api.paths[path][verb].responses){%>
             <% if(Object.keys(api.paths[path][verb].responses).includes('200')){%>
             Then response code should be 200
