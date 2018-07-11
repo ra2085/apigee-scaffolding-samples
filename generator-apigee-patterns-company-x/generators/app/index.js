@@ -110,8 +110,8 @@ module.exports = class extends Generator {
                 var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
                 var result = stylesheet.apply(srcDocument);
                 this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
-                this.fs.commit(()=>{});
-                return Promise.resolve(true);
+                this.fs.commit(()=>{});console.log('7');
+                return resolve(true);
             })
         });
     }
@@ -126,11 +126,12 @@ module.exports = class extends Generator {
 	    var result = stylesheet.apply(srcDocument);
 	    this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', result);
 	    this.fs.commit(()=>{});
+        console.log('8');
 	}
     }
 
     createMockServer(){
-        if(this.promptAnswers.createMock){
+        if(this.promptAnswers.createMock){console.log('9');
         return new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
             let mockConfig = new Object();;
@@ -143,9 +144,9 @@ module.exports = class extends Generator {
             let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
-            };
+            };console.log('10');
             let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve, reject) => {console.log('16');
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
                         let useJsonSchemas = () => {
@@ -188,14 +189,14 @@ module.exports = class extends Generator {
                     }
                 });
             };
-            let evalPath  = (paths, path, webService) => {
-                    return Promise.all(Object.keys(paths[path]).map((verb) => {
+            let evalPath  = (paths, path, webService) => {console.log('14');
+                    return Promise.all(Object.keys(paths[path]).map((verb) => {console.log('15');
                         return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses, webService);
                     }));
             };
-            let evalPaths = (api) => {
+            let evalPaths = (api) => {console.log('11');
                 return Promise.all(Object.keys(api.paths).map((path) => {
-                    let webService = new Object();
+                    let webService = new Object();console.log('12');
                     webService.latency = 1000;
                     webService.verbs = [];
                     webService.responses = new Object();
