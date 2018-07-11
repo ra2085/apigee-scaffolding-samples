@@ -237,16 +237,12 @@ module.exports = class extends Generator {
                                 if(this.apiConsumes){
                                     return this.apiConsumes.includes('application/json');
                                 }
-                            };console.log('1');
-                            if(useJsonSchemas() && path[verb].parameters){console.log('2');
-                                Promise.all(path[verb].parameters.map((parameter) => {console.log('3');
-                                    return new Promise((resolve, reject) => {console.log('4');
-                                        if(parameter.in === 'body' && parameter.schema){console.log('5');
-                                                console.log('6');
-                                                console.log(JSON.stringify(parameter.schema, null, 4));
+                            };
+                            if(useJsonSchemas() && path[verb].parameters){
+                                Promise.all(path[verb].parameters.map((parameter) => {
+                                    return new Promise((resolve, reject) => {
+                                        if(parameter.in === 'body' && parameter.schema){
                                                 resolveSchema(parameter.schema).then((esq) => {
-                                                    console.log(JSON.stringify(parameter, null, 4));
-                                                    console.log(JSON.stringify(esq, null, 4));
                                                     parameterMap[pathString+verb] = esq;console.log(''+pathString+verb);
                                                     resolve(true);
                                                 });
@@ -273,11 +269,10 @@ module.exports = class extends Generator {
                 };
                 evalPaths(this.apiDereferenced).then((resolved) => {
                     execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
-                    console.log('---------'+JSON.stringify(parameterMap, null, 4));
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-                        {api : this.apiDereferenced, parameterMap : parameterMap, tm : JSON.stringify(parameterMap, null, 4)}
+                        {api : this.apiDereferenced, parameterMap : parameterMap}
                     );
                     this.fs.commit(()=>{});
                     resolve(true);

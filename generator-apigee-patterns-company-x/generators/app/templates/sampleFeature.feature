@@ -5,11 +5,10 @@ Feature:
     <% if (verb.toUpperCase() === 'GET' || verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){ %>
     Scenario: Should get a successful response from a <%- verb %> transaction on <%- path %>
         Given I set User-Agent header to apickli
-        <%- tm %>
         <% if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){%>
         <% if(parameterMap[path+verb]){ %>
         And I set Content-Type header to application/json
-        And I set body to <%- parameterMap[path+verb] %>
+        And I set body to <%- JSON.stringify(parameterMap[path+verb]) %>
         <% } %>
         <% } %>
             When I <%- verb.toUpperCase() %> <%- path %>
