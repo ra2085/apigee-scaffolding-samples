@@ -144,7 +144,7 @@ module.exports = class extends Generator {
             let resolveSchema = (schema) => {
                 return jsf.resolve(schema);
             };
-            let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
+            let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses, webService) => {
                 return new Promise((resolve, reject) => {
                     if(supportedVerbs.includes(verb.toUpperCase())){
                         verbs.push(verb);
@@ -158,13 +158,13 @@ module.exports = class extends Generator {
 			};
             if(useJsonSchemas() && path[verb].responses){
 			    Promise.all(Object.keys(path[verb].responses).map((response) => {
-				let mockResponse = {};
 					if(path[verb].responses[response].schema){
+                        let mockResponse = {};
 					    resolveSchema(path[verb].responses[response].schema).then((schema)=>{
 						mockResponse.httpStatus = Number(response);
 						let key = verb+pathString.replace(/\//g, '').replace(/\{/g, '').replace(/\}/g, '')+response;
 						mockResponse.mockFile = key+'.json';
-						Object.defineProperty(responses, verb, {value: mockResponse, writable: true, enumerable: true});
+						Object.defineProperty(webService.responses, verb, {value: mockResponse, writable: true, enumerable: true});
 						this.fs.write(this.promptAnswers.name+'/node/mock/'+mockResponse.mockFile, JSON.stringify(schema, null, 4));
 						return Promise.resolve(true);
 					    });
@@ -172,7 +172,7 @@ module.exports = class extends Generator {
                         let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
-                            Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
+                            Object.defineProperty(webServce.responses, verb, {value: okResponse, writable: true, enumerable: true});
 					    return Promise.resolve(true);
 					}
     			    })).then((resolved) => {
@@ -182,7 +182,7 @@ module.exports = class extends Generator {
                             let okResponse = {};
                             okResponse.httpStatus = 200;
                             okResponse.mockFile = 'ok.json';
-                            Object.defineProperty(responses, verb, {value: okResponse, writable: true, enumerable: true});
+                            Object.defineProperty(webService.responses, verb, {value: okResponse, writable: true, enumerable: true});
                         }
                     }
                     resolve(true);
@@ -196,7 +196,7 @@ module.exports = class extends Generator {
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
                     Object.defineProperty(webServices, pathForMocker, {value: webService, writable: true, enumerable: true});
                     return Promise.all(Object.keys(paths[path]).map((verb) => {
-                        return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses);
+                        return evalVerb(path, paths[path], verb, supportedVerbs, webService.verbs, webService.responses, webService);
                     }));
             };
             let evalPaths = (api) => {
