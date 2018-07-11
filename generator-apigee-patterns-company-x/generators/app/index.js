@@ -143,6 +143,9 @@ module.exports = class extends Generator {
             let webServices = new Object();
             let supportedVerbs = ['GET','POST','PUT','DELETE','HEAD','OPTIONS','PATCH'];
             let resolveSchema = (schema) => {
+                jsf.option({
+                    alwaysFakeOptionals: true
+                });
                 return jsf.resolve(schema);
             };
             let evalVerb = (pathString, path, verb, supportedVerbs, verbs, responses) => {
@@ -199,7 +202,7 @@ module.exports = class extends Generator {
             let evalPaths = (api) => {
                 return Promise.all(Object.keys(api.paths).map((path) => {
                     let webService = new Object();
-                    webService.latency = 1000;
+                    webService.latency = 10;
                     webService.verbs = [];
                     webService.responses = new Object();
                     let pathForMocker = path.substring(1).replace(/\{/g, ':').replace(/}/g, '');
@@ -225,6 +228,9 @@ module.exports = class extends Generator {
             return new Promise((resolve, reject) => {
                 let parameterMap = new Object();
                 let resolveSchema = (schema) => {
+                    jsf.option({
+                      alwaysFakeOptionals: true
+                    });
                     return jsf.resolve(schema);
                 };
                 let evalVerb = (pathString, path, verb) => {
