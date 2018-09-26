@@ -55,6 +55,16 @@ module.exports = class extends Generator {
             return answers.publishApi;
         }
     }, {
+        type : 'input',
+        name : 'edgeOrg',
+        message : 'Please provide your Edge organization name.',
+        validate: (input) => {
+            return (input && input !== "") ? true : 'You must provide a valid organization name'; 
+        },
+        when : (answers) => {
+            return answers.publishApi;
+        }
+    }, {
         type : 'password',
         name : 'edgePassword',
         message : 'Please provide your Edge password.',
@@ -291,7 +301,7 @@ module.exports = class extends Generator {
     
 	if(this.promptAnswers.publishApi){
 	        this.spawnCommandSync('mvn',
-	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg=gonzalezruben-eval', '-DbasePath='+this.basePath]);
+	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
 	}
     }
 };
