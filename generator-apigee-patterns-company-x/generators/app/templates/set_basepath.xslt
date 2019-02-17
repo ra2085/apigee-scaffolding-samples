@@ -4,6 +4,9 @@
  <xsl:template match="/">
  <xsl:for-each select="@*|node()">
  <xsl:copy>
+	 <xsl:for-each select="@*|node()">
+	 <xsl:copy/>
+	 </xsl:for-each>
  </xsl:copy>
  </xsl:for-each>
  </xsl:template>
