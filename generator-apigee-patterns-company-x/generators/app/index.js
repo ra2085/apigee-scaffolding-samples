@@ -124,13 +124,13 @@ module.exports = class extends Generator {
                 //let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml'));
 				let srcDocument = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
 '<ProxyEndpoint name="default">' +
-//'<HTTPProxyConnection>' +
+'<HTTPProxyConnection>' +
 // '<BasePath>/test_mashery_key</BasePath>' +
 //  '<Properties />' +
 //   '<VirtualHost>default</VirtualHost>' +
 //    '<VirtualHost>secure</VirtualHost>' +
-//    '</HTTPProxyConnection>' +
-//    '<RouteRule name="NoRoute" />' +
+    '</HTTPProxyConnection>' +
+    '<RouteRule name="NoRoute" />' +
 '</ProxyEndpoint>';
 const xmlString = '<root>'+
 			'<test name="test1" />'+
