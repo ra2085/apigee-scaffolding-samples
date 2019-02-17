@@ -131,10 +131,28 @@ module.exports = class extends Generator {
     '</HTTPProxyConnection>' +
     '<RouteRule name="NoRoute"/>' +
 '</ProxyEndpoint>');
+const xmlString = '<root>'+
+			'<test name="test1" />'+
+			'<test name="test2" />'+
+			'<test name="test3" />'+
+			'<test name="test4" />'+
+		'</root>';
+
+		const xsltString = '<?xml version="1.0"?>' +
+			'<xsl:stylesheet version="1.0">'+
+				'<xsl:template match="test">'+
+				  '<span> <xsl:value-of select="@name" /> </span>'+
+				'</xsl:template>'+
+				'<xsl:template match="/">'+
+					'<div>'+
+						'<xsl:apply-templates select="//test" />'+
+					'</div>'+
+				'</xsl:template>'+
+			'</xsl:stylesheet>';
 				this.log(srcDocument);
 				let outXmlString = xsltProcess(
-					srcDocument,
-					stylesheet
+					xmlParse(xmlString),
+					xmlParse(xsltString)
 				);
 				/**
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
