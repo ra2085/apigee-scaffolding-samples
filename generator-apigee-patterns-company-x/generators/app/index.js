@@ -135,7 +135,7 @@ module.exports = class extends Generator {
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
 			while (nodes[0].firstChild) {
-				myNode.removeChild(myNode.firstChild);
+				nodes[0].removeChild(nodes[0].firstChild);
 			}
 			let scriptTarget = doc.createElement('ScriptTarget');
 			let resourceURL = doc.createElement('ResourceURL');
