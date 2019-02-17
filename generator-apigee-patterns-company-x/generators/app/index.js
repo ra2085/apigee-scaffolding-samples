@@ -3,6 +3,7 @@ var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var execSync = require('child_process').execSync;
 //var libxslt = require('libxslt');
+var xslt = require('trireme-xslt');
 var xsltProcessor = require('xslt-processor');
 var xsltProcess = xsltProcessor.xsltProcess;
 var xmlParse = xsltProcessor.xmlParse;
@@ -156,6 +157,7 @@ const xmlString = '<root>'+
 					xmlParse(stylesheet)
 				);
 				this.log('--'+outXmlString);
+				outXmlString = xslt.transform(stylesheet, srcDocument);
 				/**
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
