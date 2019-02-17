@@ -4,7 +4,6 @@
  <xsl:template match="/">
  <xsl:for-each select="@*|node()">
 	<xsl:apply-templates mode="a"/>
- <xsl:copy />
  </xsl:for-each>
  </xsl:template>
  <xsl:template match="@*|node()" mode="a">
@@ -12,6 +11,7 @@
 	 <xsl:copy />
 	 <xsl:apply-templates mode="a"/>
 	 </xsl:for-each>
+	 <xsl:copy />
 </xsl:template>
 </xsl:stylesheet>
 		   
