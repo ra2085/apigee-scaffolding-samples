@@ -111,7 +111,7 @@ module.exports = class extends Generator {
 	this.fs.commit(()=>{});
     }
 
-    setBasePath(){this.log('SP1!!');
+    setBasePath(){
         return new Promise((resolve, reject) => {
             SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
                 this.apiProduces = api.produces;
@@ -126,6 +126,7 @@ module.exports = class extends Generator {
 					srcDocument,
 					stylesheet
 				);
+				this.log('after XSLT!!');
 				/**
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
