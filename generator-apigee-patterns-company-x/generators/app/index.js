@@ -2,7 +2,8 @@ var fsy = require('fs');
 var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var execSync = require('child_process').execSync;
-var libxslt = require('libxslt');
+//var libxslt = require('libxslt');
+import { xsltProcess, xmlParse } from 'xslt-processor'
 var SwaggerParser = require('swagger-parser');
 var jsf = require('json-schema-faker');
 
@@ -116,11 +117,21 @@ module.exports = class extends Generator {
                 this.apiProduces = api.produces;
                 this.apiConsumes = api.consumes;
                 this.basePath = api.basePath;
+				
+				let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
+                let stylesheet = xmlParse(setBasePathXslt.replace('the_base_path', api.basePath));
+                let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml'));
+				let outXmlString = xsltProcess(
+					srcDocument,
+					stylesheet
+				);
+				/**
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
                 var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
                 var result = stylesheet.apply(srcDocument);
-                this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', result);
+				**/
+                this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', outXmlString);
                 this.fs.commit(()=>{});
                 resolve(true);
             })
@@ -128,16 +139,24 @@ module.exports = class extends Generator {
     }
 
     createMock(){
-	if(this.promptAnswers.createMock){
-	    execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
-	    execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
-	    var setMockScriptTargetXslt = this.fs.read(this.templatePath('set_mock_script_target.xslt'));
-	    var stylesheet = libxslt.parse(setMockScriptTargetXslt);
-	    var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
-	    var result = stylesheet.apply(srcDocument);
-	    this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', result);
-	    this.fs.commit(()=>{});
-	}
+		if(this.promptAnswers.createMock){
+			execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
+			execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
+			let stylesheet = xmlParse(this.fs.read(this.templatePath('set_mock_script_target.xslt')));
+			let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml'));
+			let outXmlString = xsltProcess(
+				srcDocument,
+				stylesheet
+			);
+			/**
+			var setMockScriptTargetXslt = this.fs.read(this.templatePath('set_mock_script_target.xslt'));
+			var stylesheet = libxslt.parse(setMockScriptTargetXslt);
+			var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
+			var result = stylesheet.apply(srcDocument);
+			**/
+			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', result);
+			this.fs.commit(()=>{});
+		}
     }
 
     createMockServer(){
@@ -234,7 +253,7 @@ module.exports = class extends Generator {
     }
 
     createTests(){
-	if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
+		if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
             return new Promise((resolve, reject) => {
                 let parameterMap = new Object();
                 let resolveSchema = (schema) => {
@@ -299,9 +318,9 @@ module.exports = class extends Generator {
     
     publishApi(){
     
-	if(this.promptAnswers.publishApi){
-	        this.spawnCommandSync('mvn',
-	                              ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
-	}
+		if(this.promptAnswers.publishApi){
+				this.spawnCommandSync('mvn',
+									  ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
+		}
     }
 };
