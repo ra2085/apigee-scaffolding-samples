@@ -131,7 +131,7 @@ module.exports = class extends Generator {
 			//execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
 			fsy.copySync(this.templatePath('node'), this.promptAnswers.name);
 			//execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
-			let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml'));
+			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/ProxyEndpoint/HTTPProxyConnection", doc);
 			while (nodes[0].firstChild) {
