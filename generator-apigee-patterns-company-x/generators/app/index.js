@@ -125,10 +125,10 @@ module.exports = class extends Generator {
 				let srcDocument = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
 '<ProxyEndpoint name="default">' +
 '<HTTPProxyConnection>' +
-// '<BasePath>/test_mashery_key</BasePath>' +
-//  '<Properties />' +
-//   '<VirtualHost>default</VirtualHost>' +
-//    '<VirtualHost>secure</VirtualHost>' +
+ '<BasePath>/test_mashery_key</BasePath>' +
+  '<Properties />' +
+   '<VirtualHost>default</VirtualHost>' +
+    '<VirtualHost>secure</VirtualHost>' +
     '</HTTPProxyConnection>' +
     '<RouteRule name="NoRoute" />' +
 '</ProxyEndpoint>';
