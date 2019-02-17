@@ -10,10 +10,10 @@
  </xsl:template>
  <xsl:template match="@*|node()" mode="a">
     <xsl:for-each select="@*|node()">
-	 <xsl:copy />
+	 <xsl:copy>
 	 <xsl:apply-templates mode="a"/>
+	 </xsl:copy>
 	 </xsl:for-each>
-	 <xsl:copy />
 </xsl:template>
 </xsl:stylesheet>
 		   
