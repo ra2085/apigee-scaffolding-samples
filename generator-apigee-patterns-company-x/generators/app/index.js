@@ -11,7 +11,7 @@ var jsf = require('json-schema-faker');
 
 module.exports = class extends Generator {
     
-    prompting() {
+    async prompting() {
         
     this.log(require('yosay')('This is a sample implementation for a basic scaffolding tool.'));
     this.log(chalk.magenta(
@@ -21,7 +21,7 @@ module.exports = class extends Generator {
     this.log(chalk.magenta('2. Your API comes first, then the implementation'));
     this.log(chalk.magenta('3. Your API should be self-descriptive'));
     
-    return async this.prompt([{
+    this.promptAnswers = await this.prompt([{
       type    : 'input',
       name    : 'name',
       message : 'Your API name',
@@ -84,9 +84,7 @@ module.exports = class extends Generator {
         //message: "Which security pattern are you going to use?",
         //choices: ['B2B','B2C']
         //             }
-        ]).then((answers) => {
-	   this. promptAnswers = answers;
-	});
+        ]);
 		
         //this.fs.copyTpl(
         //    this.templatePath('flow-callout-OAuth.xml'),
