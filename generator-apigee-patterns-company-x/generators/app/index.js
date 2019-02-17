@@ -6,6 +6,8 @@ var xpath = require('xpath')
   , dom = require('xmldom').DOMParser;
 var SwaggerParser = require('swagger-parser');
 var jsf = require('json-schema-faker');
+var apigeetool = require('apigeetool');
+var sdk = apigeetool.getPromiseSDK();
 
 module.exports = class extends Generator {
     
@@ -142,7 +144,6 @@ module.exports = class extends Generator {
 			resourceURL.textContent = 'node://app.js';
 			scriptTarget.appendChild(resourceURL);
 			nodes[0].appendChild(scriptTarget);
-			this.log(doc.toString());
 			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
 		}
@@ -242,7 +243,7 @@ module.exports = class extends Generator {
     }
 
     createTests(){
-		if(this.promptAnswers.publishApi && this.promptAnswers.createMock){
+		if(this.promptAnswers.createMock){
             return new Promise((resolve, reject) => {
                 let parameterMap = new Object();
                 let resolveSchema = (schema) => {
@@ -305,11 +306,29 @@ module.exports = class extends Generator {
         }
     }
     
-    publishApi(){
+    async publishApi(){
     
 		if(this.promptAnswers.publishApi){
-				this.spawnCommandSync('mvn',
-									  ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
+			
+			var opts = {
+				organization: this.promptAnswers.edgeOrg,
+				username: this.promptAnswers.edgeUsername,
+				password: this.promptAnswers.edgePassword,
+				environments: 'test',
+				api:this.promptAnswers.name,
+				directory:'./'+this.promptAnswers.name
+			}
+			
+			await sdk.deployProxy(opts)
+			.then(function(result){
+				this.log('success!');
+        //deploy success
+			},function(err){
+				this.log('failure!');
+        //deploy failed
+			});
+				//this.spawnCommandSync('mvn',
+				//					  ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
 		}
     }
 };
