@@ -154,7 +154,7 @@ module.exports = class extends Generator {
 			var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
 			var result = stylesheet.apply(srcDocument);
 			**/
-			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', result);
+			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', outXmlString);
 			this.fs.commit(()=>{});
 		}
     }
