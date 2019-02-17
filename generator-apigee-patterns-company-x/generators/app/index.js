@@ -133,7 +133,7 @@ module.exports = class extends Generator {
 			//execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
-			let nodes = xpath.select("/TargetEndpoint/HTTPProxyConnection", doc);
+			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
 			while (nodes[0].firstChild) {
 				myNode.removeChild(myNode.firstChild);
 			}
