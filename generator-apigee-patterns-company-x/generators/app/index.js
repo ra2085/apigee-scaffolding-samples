@@ -21,7 +21,7 @@ module.exports = class extends Generator {
     this.log(chalk.magenta('2. Your API comes first, then the implementation'));
     this.log(chalk.magenta('3. Your API should be self-descriptive'));
     
-    return this.prompt([{
+    return async this.prompt([{
       type    : 'input',
       name    : 'name',
       message : 'Your API name',
