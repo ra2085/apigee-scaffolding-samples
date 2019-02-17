@@ -141,7 +141,7 @@ module.exports = class extends Generator {
 			let resourceURL = doc.createElement('ResourceURL');
 			resourceURL.innerHTML = 'node://app.js';
 			scriptTarget.appendChild(resourceURL);
-			node[0].appendChild(scriptTarget);
+			nodes[0].appendChild(scriptTarget);
 			this.log(doc.toString());
 			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
