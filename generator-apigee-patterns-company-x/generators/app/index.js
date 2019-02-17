@@ -1,10 +1,7 @@
-var fsy = require('fs');
+var fsy = require('fs-extra');
 var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var execSync = require('child_process').execSync;
-var xsltProcessor = require('xslt-processor');
-var xsltProcess = xsltProcessor.xsltProcess;
-var xmlParse = xsltProcessor.xmlParse;
 var xpath = require('xpath')
   , dom = require('xmldom').DOMParser;
 var SwaggerParser = require('swagger-parser');
@@ -117,58 +114,12 @@ module.exports = class extends Generator {
             SwaggerParser.validate(this.promptAnswers.name+'.yaml').then((api) => {
                 this.apiProduces = api.produces;
                 this.apiConsumes = api.consumes;
-                this.basePath = api.basePath;
-				
-				let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
-                let stylesheet = setBasePathXslt.replace('the_base_path', api.basePath);
-				this.log(stylesheet);
+                this.basePath = api.basePath;	
                 let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml');
-				/**let srcDocument = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-'<ProxyEndpoint name="default">' +
-'<HTTPProxyConnection>' +
- '<BasePath>/test_mashery_key</BasePath>' +
-  '<Properties />' +
-   '<VirtualHost>default</VirtualHost>' +
-    '<VirtualHost>secure</VirtualHost>' +
-    '</HTTPProxyConnection>' +
-    '<RouteRule name="NoRoute" />' +
-		'</ProxyEndpoint>';**/
-const xmlString = '<root>'+
-			'<test name="test1" />'+
-			'<test name="test2" />'+
-			'<test name="test3" />'+
-			'<test name="test4" />'+
-		'</root>';
-
-		const xsltString = '<?xml version="1.0"?>' +
-			'<xsl:stylesheet version="1.0">'+
-				'<xsl:template match="test">'+
-				  '<span> <xsl:value-of select="@name" /> </span>'+
-				'</xsl:template>'+
-				'<xsl:template match="/">'+
-					'<div>'+
-						'<xsl:apply-templates select="//test" />'+
-					'</div>'+
-				'</xsl:template>'+
-			'</xsl:stylesheet>';
-				
-				let outXmlString = xsltProcess(
-					xmlParse(srcDocument),
-					xmlParse(stylesheet)
-				);
-				this.log('--'+outXmlString);
 				let doc = new dom().parseFromString(srcDocument);
 				let nodes = xpath.select("/ProxyEndpoint/HTTPProxyConnection/BasePath", doc);
-				this.log('++'+nodes[0].textContent);
-				nodes[0].textContent = 'override!';
-				this.log('++'+doc.toString());
-				/**
-                let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
-                let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
-                var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml')
-                var result = stylesheet.apply(srcDocument);
-				**/
-                this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', outXmlString);
+				nodes[0].textContent = api.basePath;
+                this.fs.write(this.promptAnswers.name + '/apiproxy/proxies/default.xml', doc.toString());
                 this.fs.commit(()=>{});
                 resolve(true);
             })
@@ -177,21 +128,22 @@ const xmlString = '<root>'+
 
     createMock(){
 		if(this.promptAnswers.createMock){
-			execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
-			execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
-			let stylesheet = xmlParse(this.fs.read(this.templatePath('set_mock_script_target.xslt')));
+			//execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
+			fsy.copySync(this.templatePath('node'), this.promptAnswers.name);
+			//execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 			let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml'));
-			let outXmlString = xsltProcess(
-				srcDocument,
-				stylesheet
-			);
-			/**
-			var setMockScriptTargetXslt = this.fs.read(this.templatePath('set_mock_script_target.xslt'));
-			var stylesheet = libxslt.parse(setMockScriptTargetXslt);
-			var srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml')
-			var result = stylesheet.apply(srcDocument);
-			**/
-			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', outXmlString);
+			let doc = new dom().parseFromString(srcDocument);
+			let nodes = xpath.select("/ProxyEndpoint/HTTPProxyConnection", doc);
+			while (nodes[0].firstChild) {
+				myNode.removeChild(myNode.firstChild);
+			}
+			let scriptTarget = doc.createElement('ScriptTarget');
+			let resourceURL = doc.createElement('ResourceURL');
+			resourceURL.innerHTML = 'node://app.js';
+			scriptTarget.appendChild(resourceURL);
+			node[0].appendChild(scriptTarget);
+			this.log(doc.toString());
+			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
 		}
     }
