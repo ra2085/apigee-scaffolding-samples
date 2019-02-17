@@ -3,7 +3,9 @@ var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var execSync = require('child_process').execSync;
 //var libxslt = require('libxslt');
-import { xsltProcess, xmlParse } from 'xslt-processor'
+var xsltProcessor = require('xslt-processor');
+var xsltProcess = xsltProcessor.xsltProcess;
+var xmlParse = xsltProcessor.xmlParse;
 var SwaggerParser = require('swagger-parser');
 var jsf = require('json-schema-faker');
 
