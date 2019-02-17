@@ -120,7 +120,7 @@ module.exports = class extends Generator {
 				
 				let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = setBasePathXslt.replace('the_base_path', api.basePath);
-				this.log(stylesheet\);
+				this.log(stylesheet);
                 //let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml'));
 				let srcDocument = //'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
 '<ProxyEndpoint name="default">' +
