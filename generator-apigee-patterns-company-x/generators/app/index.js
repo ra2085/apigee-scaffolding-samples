@@ -139,7 +139,7 @@ module.exports = class extends Generator {
 			}
 			let scriptTarget = doc.createElement('ScriptTarget');
 			let resourceURL = doc.createElement('ResourceURL');
-			resourceURL.innerHTML = 'node://app.js';
+			resourceURL.textContent = 'node://app.js';
 			scriptTarget.appendChild(resourceURL);
 			nodes[0].appendChild(scriptTarget);
 			this.log(doc.toString());
