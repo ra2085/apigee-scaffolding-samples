@@ -4,7 +4,7 @@
  <xsl:template match="/">
     <BasePath>the_base_path</BasePath>
  </xsl:template>
- <xsl:template match="node()|@*" name="identity">
+ <xsl:template match="/" name="identity">
    <xsl:copy>
       <xsl:apply-templates select="node()|@*"/>
    </xsl:copy>
