@@ -158,7 +158,7 @@ const xmlString = '<root>'+
 				);
 				this.log('--'+outXmlString);
 				let doc = new dom().parseFromString(srcDocument);
-				let nodes = xpath.select("/ProxyEndpoint/BasePath", doc);
+				let nodes = xpath.select("/ProxyEndpoint/HTTPProxyConnection/BasePath", doc);
 				this.log('++'+nodes[0].textContent);
 				nodes[0].textContent = 'override!';
 				this.log('++'+doc.toString());
