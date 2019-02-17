@@ -2,10 +2,11 @@ var fsy = require('fs');
 var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var execSync = require('child_process').execSync;
-//var libxslt = require('libxslt');
 var xsltProcessor = require('xslt-processor');
 var xsltProcess = xsltProcessor.xsltProcess;
 var xmlParse = xsltProcessor.xmlParse;
+var xpath = require('xpath')
+  , dom = require('xmldom').DOMParser;
 var SwaggerParser = require('swagger-parser');
 var jsf = require('json-schema-faker');
 
@@ -156,6 +157,11 @@ const xmlString = '<root>'+
 					xmlParse(stylesheet)
 				);
 				this.log('--'+outXmlString);
+				let doc = new dom().parseFromString(srcDocument);
+				let nodes = xpath.select("/ProxyEndpoint/BasePath", doc);
+				this.log('++'+nodes[0].textContent);
+				nodes[0].textContent = 'override!';
+				this.log('++'+doc.toString());
 				/**
                 let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = libxslt.parse(setBasePathXslt.replace('the_base_path', api.basePath));
