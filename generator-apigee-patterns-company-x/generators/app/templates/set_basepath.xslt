@@ -4,11 +4,16 @@
  <xsl:template match="/">
  <xsl:for-each select="@*|node()">
  <xsl:copy>
-	 <xsl:for-each select="@*|node()">
-	 <xsl:copy/>
-	 </xsl:for-each>
+	 <xsl:apply-templates mode="a"/>
  </xsl:copy>
  </xsl:for-each>
  </xsl:template>
+ <xsl:template match="*" mode="a">
+    <xsl:for-each select="@*|node()">
+	 <xsl:copy>
+	 <xsl:apply-templates mode="a"/>
+	  </xsl:copy>
+	 </xsl:for-each>
+</xsl:template>
 </xsl:stylesheet>
 		   
