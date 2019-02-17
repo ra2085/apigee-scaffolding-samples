@@ -121,7 +121,7 @@ module.exports = class extends Generator {
 				let setBasePathXslt = this.fs.read(this.templatePath('set_basepath.xslt'));
                 let stylesheet = xmlParse(setBasePathXslt.replace('the_base_path', api.basePath));
                 //let srcDocument = xmlParse(this.fs.read(this.promptAnswers.name + '/apiproxy/proxies/default.xml'));
-				let srcDocument = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+				let srcDocument = xmlParse('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ProxyEndpoint name="default">
 <HTTPProxyConnection>
         <BasePath>/test_mashery_key</BasePath>
@@ -130,7 +130,7 @@ module.exports = class extends Generator {
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
     <RouteRule name="NoRoute"/>
-</ProxyEndpoint>';
+</ProxyEndpoint>');
 				this.log(srcDocument);
 				let outXmlString = xsltProcess(
 					srcDocument,
