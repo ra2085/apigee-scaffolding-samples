@@ -328,8 +328,6 @@ module.exports = class extends Generator {
 			}
 			
 			await sdk.deployProxy(opts);
-				//this.spawnCommandSync('mvn',
-				//					  ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
 		}
     }
 	
@@ -337,7 +335,7 @@ module.exports = class extends Generator {
 		
 		if(this.promptAnswers.publishApi){
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
-			execSync('./'+this.promptAnswers.name+'/tests/node_modules/.bin/cucumber.js '+'./'+this.promptAnswers.name+'/tests/features --world-parameters {"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}');
+			execSync('cd '+this.promptAnswers.name+'/tests && ./node_modules/.bin/cucumber.js ./features --world-parameters '{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}'');
 		}
 	}
 };
