@@ -131,7 +131,7 @@ module.exports = class extends Generator {
     createMock(){
 		if(this.promptAnswers.createMock){
 			fsy.copySync(this.templatePath('node'), this.promptAnswers.name + '/node');
-			execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
+			execSync('cd '+this.promptAnswers.name+'/node && npm install');
 			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
@@ -327,16 +327,17 @@ module.exports = class extends Generator {
 				debug: true
 			}
 			
-			await sdk.deployProxy(opts)
-			.then(function(result){
-				this.log('success!');
-        //deploy success
-			},function(err){
-				console.log('failure!'+ err);
-        //deploy failed
-			});
+			await sdk.deployProxy(opts);
 				//this.spawnCommandSync('mvn',
 				//					  ['-f',this.promptAnswers.name+'/pom.xml','install', '-Ptest', '-Dusername='+this.promptAnswers.edgeUsername, '-Dpassword='+this.promptAnswers.edgePassword, '-Dorg='+this.promptAnswers.edgeOrg, '-DbasePath='+this.basePath]);
 		}
     }
+	
+	testApi(){
+		
+		if(this.promptAnswers.publishApi){
+			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
+			execSync('./'+this.promptAnswers.name+'/tests/node_modules/.bin/cucumber.js '+'./'+this.promptAnswers.name+'/tests/features --world-parameters {"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}');
+		}
+	}
 };
