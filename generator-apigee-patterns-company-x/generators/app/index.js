@@ -316,7 +316,8 @@ module.exports = class extends Generator {
 				password: this.promptAnswers.edgePassword,
 				environments: 'test',
 				api:this.promptAnswers.name,
-				directory:'./'+this.promptAnswers.name
+				directory:'./'+this.promptAnswers.name,
+				debug: true
 			}
 			
 			await sdk.deployProxy(opts)
@@ -324,7 +325,7 @@ module.exports = class extends Generator {
 				this.log('success!');
         //deploy success
 			},function(err){
-				this.log('failure!');
+				console.log('failure!'+ err);
         //deploy failed
 			});
 				//this.spawnCommandSync('mvn',
