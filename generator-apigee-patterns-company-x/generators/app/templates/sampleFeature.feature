@@ -4,7 +4,7 @@ Feature:
     <% for (let verb in api.paths[path]){ %>
     <% if (verb.toUpperCase() === 'GET' || verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT' || verb.toUpperCase() === 'DELETE' || verb.toUpperCase() === 'PATCH'){ %>
         <% if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT' || verb.toUpperCase() === 'PATCH' || verb.toUpperCase() === 'DELETE'){%>
-		<% if(parameterMap[path+verb].body.length > 0){ %>
+		<% if(parameterMap[path+verb] && parameterMap[path+verb].body.length > 0){ %>
 		<% for (let body in parameterMap[path+verb].body){ %>
     Scenario: Should get a successful response from a <%- verb %> transaction on <%- path %>
         Given I set User-Agent header to apickli
@@ -27,7 +27,7 @@ Feature:
 	Scenario: Should get a successful response from a <%- verb %> transaction on <%- path %>
         Given I set User-Agent header to apickli
 		And I set Content-Type header to application/json
-		<% if(parameterMap[path+verb].query.length > 0){ %>
+		<% if(parameterMap[path+verb] && parameterMap[path+verb].query.length > 0){ %>
 		And I set query parameters to
 		  | parameter | value |
 		<% for (let query in parameterMap[path+verb].query){ %>
