@@ -270,7 +270,7 @@ module.exports = class extends Generator {
                                     return this.apiConsumes.includes('application/json');
                                 }
                             };
-                            if(path[verb].parameters){
+                            if(path[verb].parameters && path[verb].parameters.length > 0){
 								parameterMap[pathString+verb] = new Object();
 								parameterMap[pathString+verb].body = new Array();
 								parameterMap[pathString+verb].query = new Array();
@@ -285,8 +285,8 @@ module.exports = class extends Generator {
 											let stringOrInt = {"type": "object", "properties": {"val": { "type": parameter.type }},"required": ["val"]};
 											resolveSchema(stringOrInt).then((esq) => {
 												parameterMap[pathString+verb].query.push({name:parameter.name,val:esq.val});
+												resolve(true);
 											});
-											resolve(true);
 										} else {resolve(true);}
                                     });
                                 })).then((resolved) => {resolve(true)});
