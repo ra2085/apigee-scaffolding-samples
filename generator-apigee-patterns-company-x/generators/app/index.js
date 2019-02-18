@@ -346,7 +346,7 @@ module.exports = class extends Generator {
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
 			let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
 			{cwd:'./'+this.promptAnswers.name+'/tests'});
-			this.log(result);
+			this.log(result.toString('utf8'));
 		}
 	}
 };
