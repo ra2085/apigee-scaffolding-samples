@@ -234,7 +234,7 @@ module.exports = class extends Generator {
                 return evalPaths(api);
             }).then((result) => {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
-                    this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
+                    fsy.writeSync(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
 					fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
 					this.log('copied sources!');
