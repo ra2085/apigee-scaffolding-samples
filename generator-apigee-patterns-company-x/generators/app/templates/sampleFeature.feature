@@ -30,8 +30,8 @@ Feature:
 		<% if(parameterMap[path+verb] && parameterMap[path+verb].query.length > 0){ %>
 		And I set query parameters to
 		  | parameter | value |
-		<% for (let query in parameterMap[path+verb].query){ %>
-		  | <%- query.name %> | <%- query.val %> |
+		<% for (let qu in parameterMap[path+verb].query){ %>
+		  | <%- qu.name %> | <%- qu.val %> |
 		<% } %>
 		<% } %>
 		When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- path %>
