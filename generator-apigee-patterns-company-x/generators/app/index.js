@@ -261,7 +261,7 @@ module.exports = class extends Generator {
                 };
                 let evalVerb = (pathString, path, verb) => {
                     return new Promise((resolve, reject) => {
-                        if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT'){
+                        if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT' || verb.toUpperCase() === 'GET' || verb.toUpperCase() === 'PATCH' || verb.toUpperCase() === 'DELETE'){
                             let useJsonSchemas = () => {
                                 if(path[verb].consumes){
                                     return path[verb].consumes.includes('application/json');
