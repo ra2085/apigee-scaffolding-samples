@@ -131,7 +131,7 @@ module.exports = class extends Generator {
     createMock(){
 		if(this.promptAnswers.createMock){
 			//execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
-			fsy.copySync(this.templatePath('node'), this.promptAnswers.name);
+			fsy.copySync(this.templatePath('node'), this.promptAnswers.name + '/');
 			//execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
