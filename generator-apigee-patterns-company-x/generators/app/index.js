@@ -309,7 +309,7 @@ module.exports = class extends Generator {
                 }));
                 };
                 evalPaths(this.apiDereferenced).then((resolved) => {
-                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');console.log(JSON.stringify(parameterMap));
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
