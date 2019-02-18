@@ -270,15 +270,24 @@ module.exports = class extends Generator {
                                     return this.apiConsumes.includes('application/json');
                                 }
                             };
-                            if(useJsonSchemas() && path[verb].parameters){
+                            if(path[verb].parameters){
+								parameterMap[pathString+verb] = new Object();
+								parameterMap[pathString+verb].body = new Array();
+								parameterMap[pathString+verb].query = new Array();
                                 Promise.all(path[verb].parameters.map((parameter) => {
                                     return new Promise((resolve, reject) => {
-                                        if(parameter.in === 'body' && parameter.schema){
+                                        if(parameter.in === 'body' && parameter.schema && useJsonSchemas()){
                                                 resolveSchema(parameter.schema).then((esq) => {
-                                                    parameterMap[pathString+verb] = esq;console.log(''+pathString+verb);
+                                                    parameterMap[pathString+verb].body.push(esq);console.log(''+pathString+verb);
                                                     resolve(true);
                                                 });
-                                        } else {resolve(true);}
+                                        } else if(parameter.in === 'query' && parameter.type !== 'array'){
+											let stringOrInt = {"type": "object", "properties": {"val": { "type": parameter.type }},"required": ["val"]};
+											resolveSchema(stringOrInt).then((esq) => {
+												parameterMap[pathString+verb].query.push({name:parameter.name,val:esq.val});
+											});
+											resolve(true);
+										} else {resolve(true);}
                                     });
                                 })).then((resolved) => {resolve(true)});
                             } else {
@@ -324,7 +333,7 @@ module.exports = class extends Generator {
 				environments: 'test',
 				api:this.promptAnswers.name,
 				directory:'./'+this.promptAnswers.name,
-				debug: true
+				debug: false
 			}
 			
 			await sdk.deployProxy(opts);
@@ -337,7 +346,7 @@ module.exports = class extends Generator {
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
 			let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
 			{cwd:'./'+this.promptAnswers.name+'/tests'});
-			this.log('='+result);
+			this.log(result);
 		}
 	}
 };
