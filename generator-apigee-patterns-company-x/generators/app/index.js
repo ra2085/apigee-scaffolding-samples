@@ -136,11 +136,12 @@ module.exports = class extends Generator {
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
 			doc.removeChild(nodes[0]);
+			let target = xpath.select("/TargetEndpoint", doc);
 			let scriptTarget = doc.createElement('ScriptTarget');
 			let resourceURL = doc.createElement('ResourceURL');
 			resourceURL.textContent = 'node://app.js';
 			scriptTarget.appendChild(resourceURL);
-			doc.appendChild(scriptTarget);
+			target.appendChild(scriptTarget);
 			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
 		}
