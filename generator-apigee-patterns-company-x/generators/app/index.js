@@ -236,7 +236,8 @@ module.exports = class extends Generator {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
-					fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + 'apiproxy/resources/node');
+					fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + 'apiproxy/resources');
+					this.log('copied sources!');
                     resolve(true);
                 });
             });
