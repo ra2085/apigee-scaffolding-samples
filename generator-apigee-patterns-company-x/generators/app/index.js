@@ -132,7 +132,7 @@ module.exports = class extends Generator {
 		if(this.promptAnswers.createMock){
 			//execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
 			fsy.copySync(this.templatePath('node'), this.promptAnswers.name + '/node');
-			//execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
+			execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
@@ -236,6 +236,7 @@ module.exports = class extends Generator {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     this.fs.write(this.promptAnswers.name+'/node/config-generated.json', JSON.stringify(mockConfig, null, 4));
                     this.fs.commit(()=>{});
+					fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + 'apiproxy/resources/node');
                     resolve(true);
                 });
             });
