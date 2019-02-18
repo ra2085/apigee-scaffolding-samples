@@ -31,7 +31,7 @@ Feature:
 		And I set query parameters to
 		  | parameter | value |
 		<% for (let qu in parameterMap[path+verb].query){ %>
-		  | <%- JSON.stringify(qu) %> | <%= qu.val %> |
+		  | <%- parameterMap[path+verb].query[qu].name %> | <%- parameterMap[path+verb].query[qu].val %> |
 		<% } %>
 		<% } %>
 		When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- path %>
