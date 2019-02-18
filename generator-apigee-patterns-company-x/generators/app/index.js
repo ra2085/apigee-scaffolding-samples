@@ -130,28 +130,25 @@ module.exports = class extends Generator {
 
     createMock(){
 		if(this.promptAnswers.createMock){
-			//execSync('cp -r '+this.templatePath('node')+' '+this.promptAnswers.name+'/');
 			fsy.copySync(this.templatePath('node'), this.promptAnswers.name + '/node');
 			execSync('cd '+this.promptAnswers.name+'/node && npm install'); 
 			let srcDocument = this.fs.read(this.promptAnswers.name + '/apiproxy/targets/default.xml');
 			let doc = new dom().parseFromString(srcDocument);
 			let nodes = xpath.select("/TargetEndpoint/HTTPTargetConnection", doc);
-			while (nodes[0].firstChild) {
-				nodes[0].removeChild(nodes[0].firstChild);
-			}
+			doc.removeChild(nodes[0]);
 			let scriptTarget = doc.createElement('ScriptTarget');
 			let resourceURL = doc.createElement('ResourceURL');
 			resourceURL.textContent = 'node://app.js';
 			scriptTarget.appendChild(resourceURL);
-			nodes[0].appendChild(scriptTarget);
+			doc.appendChild(scriptTarget);
 			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
 		}
     }
 
-    createMockServer(){
+    async createMockServer(){
         if(this.promptAnswers.createMock){
-        return new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
             let mockConfig = new Object();;
             mockConfig.mockDirectory = './mock';
@@ -236,13 +233,20 @@ module.exports = class extends Generator {
                     Object.defineProperty(mockConfig, 'webServices', {value: webServices, writable:true, enumerable: true});
                     fsy.writeJsonSync(this.promptAnswers.name+'/node/config-generated.json', mockConfig, {spaces:4});
                     this.fs.commit(()=>{});
-					fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
-					this.log('copied sources!');
                     resolve(true);
                 });
             });
         }
     }
+	
+	copyNodeResources(){
+		if(this.promptAnswers.createMock){
+			execSync('cd '+this.promptAnswers.name+'/node && zip -r node_modules.zip node_modules/ && rm -r node_modules');
+			fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
+			this.log('copied sources!');
+			
+		}
+	}
 
     createTests(){
 		if(this.promptAnswers.createMock){
