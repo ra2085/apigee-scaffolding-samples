@@ -335,7 +335,9 @@ module.exports = class extends Generator {
 		
 		if(this.promptAnswers.publishApi){
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
-		execSync('cd '+this.promptAnswers.name+'/tests && ./node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'');
+			let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
+			{cwd:'./'+this.promptAnswers.name+'/tests'});
+			this.debug('='+result);
 		}
 	}
 };
