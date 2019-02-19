@@ -274,6 +274,7 @@ module.exports = class extends Generator {
 								parameterMap[pathString+verb] = new Object();
 								parameterMap[pathString+verb].body = new Array();
 								parameterMap[pathString+verb].query = new Array();
+								parameterMap[pathString+verb].path = new Array();
                                 Promise.all(path[verb].parameters.map((parameter) => {
                                     return new Promise((resolve, reject) => {
                                         if(parameter.in === 'body' && parameter.schema && useJsonSchemas()){
@@ -285,6 +286,19 @@ module.exports = class extends Generator {
 											let stringOrInt = {"type": "object", "properties": {"val": { "type": parameter.type }},"required": ["val"]};
 											resolveSchema(stringOrInt).then((esq) => {
 												parameterMap[pathString+verb].query.push({name:parameter.name,val:esq.val});
+												resolve(true);
+											});
+										} else if(parameter.in === 'query' && parameter.type === 'array' && parameter.items && parameter.collectionFormat && parameter.collectionFormat === 'multi'){
+											let stringOrInt = {"type": "object", "properties": {"val": { "type": parameter.items.type }},"required": ["val"]};
+											resolveSchema(stringOrInt).then((esq) => {
+												parameterMap[pathString+verb].query.push({name:parameter.name,val:esq.val});
+												parameterMap[pathString+verb].query.push({name:parameter.name,val:esq.val});
+												resolve(true);
+											});
+										} else if(parameter.in === 'path' && parameter.type !== 'array'){
+											let stringOrInt = {"type": "object", "properties": {"val": { "type": parameter.type }},"required": ["val"]};
+											resolveSchema(stringOrInt).then((esq) => {
+												parameterMap[pathString+verb].path.push({name:parameter.name,val:esq.val});
 												resolve(true);
 											});
 										} else {resolve(true);}
@@ -310,10 +324,16 @@ module.exports = class extends Generator {
                 };
                 evalPaths(this.apiDereferenced).then((resolved) => {
                     execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');console.log(JSON.stringify(parameterMap));
+					let replacePathParams = (valArray, path) => {
+						for(let val in valArray){
+							path = path.replaceAll('{'+valArray[val].name+'}',valArray[val].val);
+						}
+						return path;
+					};
                     this.fs.copyTpl(
                         this.templatePath('sampleFeature.feature'),
                         this.destinationPath(this.promptAnswers.name+'/tests/features/sampleFeature.feature'),
-                        {api : this.apiDereferenced, parameterMap : parameterMap}
+                        {api : this.apiDereferenced, parameterMap : parameterMap, replacePathParams: replacePathParams}
                     );
                     this.fs.commit(()=>{});
                     resolve(true);
