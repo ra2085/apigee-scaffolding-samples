@@ -326,7 +326,7 @@ module.exports = class extends Generator {
                     execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');console.log(JSON.stringify(parameterMap));
 					let replacePathParams = (valArray, path) => {
 						for(let val in valArray){
-							path = path.replaceAll('{'+valArray[val].name+'}',valArray[val].val);
+							path = path.replace(new RegExp('{'+valArray[val].name+'}','g'),valArray[val].val);
 						}
 						return path;
 					};
