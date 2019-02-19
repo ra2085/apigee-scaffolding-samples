@@ -35,7 +35,7 @@ Feature:
 		<%_ } -%>
 		<%_ } -%>
 		When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- replacePathParams(parameterMap[path+verb].path, path) %>
-            <% if(api.paths[path][verb].responses){ -%>
+            <%_ if(api.paths[path][verb].responses){ -%>
             <%_ if(Object.keys(api.paths[path][verb].responses).includes('200')){ -%>
         Then response code should be 200
             <% } else if(Object.keys(api.paths[path][verb].responses).includes('201')) { -%>
