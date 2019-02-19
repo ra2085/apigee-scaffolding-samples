@@ -22,7 +22,7 @@ This is a [Yeoman generator](https://www.npmjs.com/package/yeoman-generator). It
 
 ### Test the generator
  * Execute the generator with `yo apigee-patterns-company-x` in the same directory as the existing OpenAPI spec
- * You'll be asked by Yeoman the Name of the API that you want to create (this name must match the file name of the spec minus the suffix .yaml e.g. `my-api` is the name and the file name is `my-api.yaml`)
+ * You'll be asked by Yeoman the Name of the API that you want to create (the name must match the file name of the spec minus the suffix .yaml e.g. `my-api` is the name and the file name is `my-api.yaml`)
  * Answer the rest of the prompts 
 
 ## Apigee + Ansible
