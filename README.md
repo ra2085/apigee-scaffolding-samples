@@ -3,8 +3,8 @@
 These examples were designed to help you understand how an API first strategy can be realized through automation and templates applied on Apigee Edge artifacts.
 
 ## Prerequisites:
- * A stable node.js/npm local instalation (can be done easily with a Docker image or an Ansible playbook)
- * Install the openapi2apigee plugin with `npm i openapi2apigee -g`
+ * A stable node.js/npm local installation
+ * Install the openapi2apigee tool with `npm i openapi2apigee -g`
  * An OpenAPI spec
 
 ## Apigee + Yeoman
@@ -12,7 +12,7 @@ These examples were designed to help you understand how an API first strategy ca
 This is a [Yeoman generator](https://www.npmjs.com/package/yeoman-generator). It provides a CLI tool that prompts the user for basic inputs and an OpenAPI spec in order to:
  * Create an Apigee API Proxy Bundle
  * Create a NodeJS Mock Target
- * Create basic Apickli Test Scenearios
+ * Create basic Apickli Test Scenarios
  * Deploy the Apigee API Proxy Bundle
  * Test the new Proxy
 
