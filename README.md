@@ -1,6 +1,6 @@
 # Scaffolding Examples
 
-These examples were designed to help you understand how an API first strategy can be realized through automation and templates applied on Apigee Edge artifacts.
+These examples were designed to help you understand how an API first strategy can be realized through automation and templates on Apigee Edge artifacts.
 
 ## Prerequisites:
  * A stable node.js/npm local installation
