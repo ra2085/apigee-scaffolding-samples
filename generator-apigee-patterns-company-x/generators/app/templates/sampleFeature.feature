@@ -24,7 +24,7 @@ Feature:
 		<% } -%>
 		<% } -%>
         <%_ } else if(verb.toUpperCase() === 'GET'){ -%>
-	Scenario: Should get a successful response from a <%- verb.toUpperCase() %> transaction on <%- replacePathParams(parameterMap[path+verb].path, path) %>
+	Scenario: Should get a successful response from a <%- verb.toUpperCase() %> transaction on <%- replacePathParams(parameterMap[path+verb].path, path) -%>
         Given I set User-Agent header to apickli
 		And I set Content-Type header to application/json
 		<% if(parameterMap[path+verb] && parameterMap[path+verb].query.length > 0){ -%>
@@ -32,8 +32,8 @@ Feature:
 		  | parameter | value |
 		<% for (let qu in parameterMap[path+verb].query){ -%>
 		  | <%- parameterMap[path+verb].query[qu].name -%> | <%- parameterMap[path+verb].query[qu].val -%> |
-		<% } -%>
-		<% } -%>
+		<%_ } -%>
+		<%_ } -%>
 		When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- replacePathParams(parameterMap[path+verb].path, path) %>
             <% if(api.paths[path][verb].responses){ -%>
             <% if(Object.keys(api.paths[path][verb].responses).includes('200')){ -%>
