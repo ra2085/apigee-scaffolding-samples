@@ -94,12 +94,15 @@ module.exports = class extends Generator {
     }
 
     openapiToApigee(){
-	this.spawnCommandSync('openapi2apigee',
+		this.log(chalk.yellow('Creating API Proxy bundle...'));
+		this.spawnCommandSync('openapi2apigee',
 	                  ['generateApi', this.promptAnswers.name, '-s', this.promptAnswers.name+'.yaml', '-d', '.']);
+	    this.log(chalk.yellow('API Proxy bundle created!'));
     }
 
     deleteZipFile(){
-	fsy.unlinkSync('./'+this.promptAnswers.name+'/apiproxy.zip');
+		this.log(chalk.yellow('Rendering templates...'));
+		fsy.unlinkSync('./'+this.promptAnswers.name+'/apiproxy.zip');
 
     }
     copyPomTemplate(){
@@ -145,10 +148,12 @@ module.exports = class extends Generator {
 			this.fs.write(this.promptAnswers.name + '/apiproxy/targets/default.xml', doc.toString());
 			this.fs.commit(()=>{});
 		}
+		this.log(chalk.yellow('Templates rendered!'));
     }
 
     async createMockServer(){
         if(this.promptAnswers.createMock){
+		this.log(chalk.yellow('Creating NodeJS Mock server...'));
         return await new Promise((resolve, reject) => {
            let nativeObject = SwaggerParser.dereference(this.promptAnswers.name+'.yaml');
             let mockConfig = new Object();;
@@ -244,12 +249,13 @@ module.exports = class extends Generator {
 		if(this.promptAnswers.createMock){
 			execSync('cd '+this.promptAnswers.name+'/node && zip -r node_modules.zip node_modules/ && rm -r node_modules');
 			fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
-			
+			this.log(chalk.yellow('Mock server created!'));
 		}
 	}
 
     createTests(){
 		if(this.promptAnswers.createMock){
+		this.log(chalk.yellow('Rendering Apickli test templates...'));
             return new Promise((resolve, reject) => {
                 let parameterMap = new Object();
                 let resolveSchema = (schema) => {
@@ -342,9 +348,9 @@ module.exports = class extends Generator {
     }
     
     async publishApi(){
-    
+		this.log(chalk.yellow('Test templates rendered!'));
 		if(this.promptAnswers.publishApi){
-			
+		this.log(chalk.yellow('Deploying API Proxy bundle...'));
 			var opts = {
 				organization: this.promptAnswers.edgeOrg,
 				username: this.promptAnswers.edgeUsername,
@@ -360,8 +366,9 @@ module.exports = class extends Generator {
     }
 	
 	testApi(){
-		
+		this.log(chalk.yellow('API Proxy bundle deployed!'));
 		if(this.promptAnswers.publishApi){
+			this.log(chalk.yellow('Running test scenarios...'));
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
 			let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
 			{cwd:'./'+this.promptAnswers.name+'/tests'});
