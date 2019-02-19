@@ -27,23 +27,23 @@ Feature:
 	Scenario: Should get a successful response from a <%- verb.toUpperCase() %> transaction on <%- replacePathParams(parameterMap[path+verb].path, path) %>
         Given I set User-Agent header to apickli
 		And I set Content-Type header to application/json
-		<%_ if(parameterMap[path+verb] && parameterMap[path+verb].query.length > 0){ -%>
+		<% if(parameterMap[path+verb] && parameterMap[path+verb].query.length > 0){ -%>
 		And I set query parameters to
 		  | parameter | value |
-		<%_ for (let qu in parameterMap[path+verb].query){ -%>
-		  | <%- parameterMap[path+verb].query[qu].name %> | <%- parameterMap[path+verb].query[qu].val %> |
-		<%_ } _%>
-		<%_ } _%>
+		<% for (let qu in parameterMap[path+verb].query){ -%>
+		  | <%- parameterMap[path+verb].query[qu].name -%> | <%- parameterMap[path+verb].query[qu].val -%> |
+		<% } -%>
+		<% } -%>
 		When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- replacePathParams(parameterMap[path+verb].path, path) %>
-            <%_ if(api.paths[path][verb].responses){ -%>
-            <%_ if(Object.keys(api.paths[path][verb].responses).includes('200')){ -%>
-            Then response code should be 200
-            <%_ } else if(Object.keys(api.paths[path][verb].responses).includes('201')) { -%>
-            Then response code should be 201
-            <%_ } else if(Object.keys(api.paths[path][verb].responses).includes('204')) { -%>
-            Then response code should be 204
-            <%_ } -%>
-            <%_ } -%>
+            <% if(api.paths[path][verb].responses){ -%>
+            <% if(Object.keys(api.paths[path][verb].responses).includes('200')){ -%>
+        Then response code should be 200
+            <% } else if(Object.keys(api.paths[path][verb].responses).includes('201')) { -%>
+        Then response code should be 201
+            <% } else if(Object.keys(api.paths[path][verb].responses).includes('204')) { -%>
+        Then response code should be 204
+            <% } -%>
+            <% } -%>
 		<% } -%>
     <% } -%>
     <% } -%>
