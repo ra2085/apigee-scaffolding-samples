@@ -14,12 +14,12 @@ module.exports = class extends Generator {
     async prompting() {
         
     this.log(require('yosay')('This is a sample implementation for a basic scaffolding tool.'));
-    this.log(chalk.magenta(
+    this.log(chalk.yellow(
         'Remember:'
     ));
-    this.log(chalk.magenta('1. Your API is the first user interface of your application'));
-    this.log(chalk.magenta('2. Your API comes first, then the implementation'));
-    this.log(chalk.magenta('3. Your API should be self-descriptive'));
+    this.log(chalk.yellow('1. Your API is the first user interface of your application'));
+    this.log(chalk.yellow('2. Your API comes first, then the implementation'));
+    this.log(chalk.yellow('3. Your API should be self-descriptive'));
     
     this.promptAnswers = await this.prompt([{
       type    : 'input',
@@ -244,7 +244,6 @@ module.exports = class extends Generator {
 		if(this.promptAnswers.createMock){
 			execSync('cd '+this.promptAnswers.name+'/node && zip -r node_modules.zip node_modules/ && rm -r node_modules');
 			fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
-			this.log('copied sources!');
 			
 		}
 	}
@@ -279,7 +278,7 @@ module.exports = class extends Generator {
                                     return new Promise((resolve, reject) => {
                                         if(parameter.in === 'body' && parameter.schema && useJsonSchemas()){
                                                 resolveSchema(parameter.schema).then((esq) => {
-                                                    parameterMap[pathString+verb].body.push(esq);console.log(''+pathString+verb);
+                                                    parameterMap[pathString+verb].body.push(esq);
                                                     resolve(true);
                                                 });
                                         } else if(parameter.in === 'query' && parameter.type !== 'array'){
@@ -323,7 +322,7 @@ module.exports = class extends Generator {
                 }));
                 };
                 evalPaths(this.apiDereferenced).then((resolved) => {
-                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');console.log(JSON.stringify(parameterMap));
+                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
 					let replacePathParams = (valArray, path) => {
 						for(let val in valArray){
 							path = path.replace(new RegExp('{'+valArray[val].name+'}','g'),valArray[val].val);
