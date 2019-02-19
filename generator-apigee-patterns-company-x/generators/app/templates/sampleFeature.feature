@@ -10,7 +10,6 @@ Feature:
         Given I set User-Agent header to apickli
         And I set Content-Type header to application/json
         And I set body to <%- JSON.stringify(body) %>
-        
             When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- replacePathParams(parameterMap[path+verb].path, path) %>
             <%_ if(api.paths[path][verb].responses){-%>
             <%_ if(Object.keys(api.paths[path][verb].responses).includes('200')){-%>
@@ -38,9 +37,9 @@ Feature:
             <%_ if(api.paths[path][verb].responses){ -%>
             <%_ if(Object.keys(api.paths[path][verb].responses).includes('200')){ -%>
         Then response code should be 200
-            <% } else if(Object.keys(api.paths[path][verb].responses).includes('201')) { -%>
+            <%_ } else if(Object.keys(api.paths[path][verb].responses).includes('201')) { -%>
         Then response code should be 201
-            <% } else if(Object.keys(api.paths[path][verb].responses).includes('204')) { -%>
+            <%_ } else if(Object.keys(api.paths[path][verb].responses).includes('204')) { -%>
         Then response code should be 204
             <%_ } -%>
             <%_ } -%>
