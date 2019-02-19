@@ -1,19 +1,29 @@
 # Scaffolding Examples
-These are basic implementations that will help you to understand, compare, and try to match capabilities with your existing dev environment characteristics, constraints, and needs.
+
+These examples were designed to help you understand how an API first strategy can be realized through automation and templates applied on Apigee Edge artifacts.
 
 ## Prerequisites:
  * A stable node.js/npm local instalation (can be done easily with a Docker image or an Ansible playbook)
- * Install the openapi2apigee plugin with `npm i openapi2apigee`
- * An OpenAPI spec (this is needed from an "API first strategy" point of view)
+ * Install the openapi2apigee plugin with `npm i openapi2apigee -g`
+ * An OpenAPI spec
 
 ## Apigee + Yeoman
+
+This is a [Yeoman generator](https://www.npmjs.com/package/yeoman-generator). It provides a CLI tool that prompts the user for basic inputs and an OpenAPI spec in order to:
+ * Create an Apigee API Proxy Bundle
+ * Create a NodeJS Mock Target
+ * Create basic Apickli Test Scenearios
+ * Deploy the Apigee API Proxy Bundle
+ * Test the new Proxy
+
 ### Prepare your Environment
  * Install Yeoman ([Here](http://yeoman.io/learning/) are the steps)
  * Run `npm link` to link the generator to your local env as described [here](http://yeoman.io/authoring/index.html)
 
 ### Test the generator
- * Execute the generator with `yo apigee-patterns-company-x` in a directory that contains an OpenAPI spec in a YAML file.
- * You'll be asked by Yeoman the Name of the API that you want o create (this name must match the file name of the spec minus the suffix .yaml e.g. `my-api` is the name and the file name is `my-api.yaml`)
+ * Execute the generator with `yo apigee-patterns-company-x` in the same directory as the existing OpenAPI spec
+ * You'll be asked by Yeoman the Name of the API that you want to create (this name must match the file name of the spec minus the suffix .yaml e.g. `my-api` is the name and the file name is `my-api.yaml`)
+ * Answer the rest of the prompts 
 
 ## Apigee + Ansible
 ### Prepare your Environment
