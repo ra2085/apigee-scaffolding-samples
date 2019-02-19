@@ -9,7 +9,7 @@ Feature:
     Scenario: Should get a successful response from a <%- verb.toUpperCase() %> transaction on <%- replacePathParams(parameterMap[path+verb].path, path) %>
         Given I set User-Agent header to apickli
         And I set Content-Type header to application/json
-        And I set body to <%- JSON.stringify(body) %>
+        And I set body to <%- JSON.stringify(parameterMap[path+verb].body[body]) %>
             When I <%- verb.toUpperCase() %><%= verb.toUpperCase() === 'POST' ? ' to' : '' %> <%- replacePathParams(parameterMap[path+verb].path, path) %>
             <%_ if(api.paths[path][verb].responses){-%>
             <%_ if(Object.keys(api.paths[path][verb].responses).includes('200')){-%>
@@ -43,7 +43,7 @@ Feature:
         Then response code should be 204
             <%_ } -%>
             <%_ } -%>
-		<% } -%>
-    <% } -%>
-    <% } -%>
-    <% } -%>
+		<%_ } -%>
+    <%_ } -%>
+    <%_ } -%>
+    <%_ } -%>
