@@ -8,6 +8,7 @@ var SwaggerParser = require('swagger-parser');
 var jsf = require('json-schema-faker');
 var apigeetool = require('apigeetool');
 var sdk = apigeetool.getPromiseSDK();
+var isWin = process.platform.startsWith('win');
 
 module.exports = class extends Generator {
     
@@ -247,7 +248,11 @@ module.exports = class extends Generator {
 	
 	copyNodeResources(){
 		if(this.promptAnswers.createMock){
-			execSync('cd '+this.promptAnswers.name+'/node && zip -r node_modules.zip node_modules/ && rm -r node_modules');
+			if(isWin){
+				execSync('cd '+this.promptAnswers.name+'/node && powershell.exe -nologo -noprofile -command "& { Add-Type -A \'System.IO.Compression.FileSystem\'; [IO.Compression.ZipFile]::CreateFromDirectory(\'node_modules\', \'node_modules.zip\'); }" && rmdir /s /q node_modules');
+			} else {
+				execSync('cd '+this.promptAnswers.name+'/node && zip -r node_modules.zip node_modules/ && rm -r node_modules');
+			}
 			fsy.copySync(this.promptAnswers.name + '/node', this.promptAnswers.name + '/apiproxy/resources/node');
 			this.log(chalk.yellow('Mock server created!'));
 		}
@@ -328,7 +333,8 @@ module.exports = class extends Generator {
                 }));
                 };
                 evalPaths(this.apiDereferenced).then((resolved) => {
-                    execSync('cp -rf '+this.templatePath('tests')+' '+this.promptAnswers.name+'/');
+					
+					fsy.copySync(this.templatePath('tests'), this.promptAnswers.name + '/tests');
 					let replacePathParams = (valArray, path) => {
 						for(let val in valArray){
 							path = path.replace(new RegExp('{'+valArray[val].name+'}','g'),valArray[val].val);
@@ -370,7 +376,7 @@ module.exports = class extends Generator {
 		if(this.promptAnswers.publishApi){
 			this.log(chalk.yellow('Running test scenarios...'));
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
-			let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
+			let result = execSync( './node_modules/.bin/'+(isWin ? 'cucumberjs.cmd' : 'cucumber.js')+' ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
 			{cwd:'./'+this.promptAnswers.name+'/tests'});
 			this.log(result.toString('utf8'));
 		}
