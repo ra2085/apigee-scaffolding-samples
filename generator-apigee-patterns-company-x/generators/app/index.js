@@ -272,7 +272,11 @@ module.exports = class extends Generator {
                 let evalVerb = (pathString, path, verb) => {
                     return new Promise((resolve, reject) => {
                         if(verb.toUpperCase() === 'POST' || verb.toUpperCase() === 'PUT' || verb.toUpperCase() === 'GET' || verb.toUpperCase() === 'PATCH' || verb.toUpperCase() === 'DELETE'){
-                            let useJsonSchemas = () => {
+                            parameterMap[pathString+verb] = new Object();
+							parameterMap[pathString+verb].body = new Array();
+							parameterMap[pathString+verb].query = new Array();
+							parameterMap[pathString+verb].path = new Array();
+							let useJsonSchemas = () => {
                                 if(path[verb].consumes){
                                     return path[verb].consumes.includes('application/json');
                                 }
@@ -281,10 +285,6 @@ module.exports = class extends Generator {
                                 }
                             };
                             if(path[verb].parameters && path[verb].parameters.length > 0){
-								parameterMap[pathString+verb] = new Object();
-								parameterMap[pathString+verb].body = new Array();
-								parameterMap[pathString+verb].query = new Array();
-								parameterMap[pathString+verb].path = new Array();
                                 Promise.all(path[verb].parameters.map((parameter) => {
                                     return new Promise((resolve, reject) => {
                                         if(parameter.in === 'body' && parameter.schema && useJsonSchemas()){
