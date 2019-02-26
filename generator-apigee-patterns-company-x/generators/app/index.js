@@ -376,9 +376,15 @@ module.exports = class extends Generator {
 		if(this.promptAnswers.publishApi){
 			this.log(chalk.yellow('Running test scenarios...'));
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
-			let result = execSync( './node_modules/.bin/'+(isWin ? 'cucumberjs.cmd' : 'cucumber.js')+' ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
-			{cwd:'./'+this.promptAnswers.name+'/tests'});
-			this.log(result.toString('utf8'));
+			if(isWin){
+				let result = execSync( '\"node_modules/.bin/cucumberjs.cmd\" \"features/\" --world-parameters \"{\\"proxyEndpoint":\\"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'\\"}\"',
+				{cwd:'./'+this.promptAnswers.name+'/tests'});
+				this.log(result.toString('utf8'));
+			} else {					
+				let result = execSync( './node_modules/.bin/cucumber.js ./features --world-parameters \'{"proxyEndpoint":"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'"}\'',
+				{cwd:'./'+this.promptAnswers.name+'/tests'});
+				this.log(result.toString('utf8'));
+			}
 		}
 	}
 };
