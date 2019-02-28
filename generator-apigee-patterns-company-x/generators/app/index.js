@@ -377,7 +377,7 @@ module.exports = class extends Generator {
 			this.log(chalk.yellow('Running test scenarios...'));
 			execSync('cd '+this.promptAnswers.name+'/tests && npm install');
 			if(isWin){
-				let result = execSync( '\"node_modules/.bin/cucumberjs.cmd\" \"features/\" --world-parameters \"{\\"proxyEndpoint":\\"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'\\"}\"',
+				let result = execSync( '\"node_modules/.bin/cucumberjs.cmd\" \"features/\" --world-parameters \"{\\"proxyEndpoint\\":\\"'+this.promptAnswers.edgeOrg+'-test.apigee.net'+this.basePath+'\\"}\"',
 				{cwd:'./'+this.promptAnswers.name+'/tests'});
 				this.log(result.toString('utf8'));
 			} else {					
