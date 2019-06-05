@@ -68,6 +68,16 @@ module.exports = class extends Generator {
         when : (answers) => {
             return answers.publishApi;
         }
+    },{
+        type : 'input',
+        name : 'edgeEnv',
+        message : 'Please provide your Edge environment name.',
+        validate: (input) => {
+            return (input && input !== "") ? true : 'You must provide a valid environment name'; 
+        },
+        when : (answers) => {
+            return answers.publishApi;
+        }
     }, {
         type : 'password',
         name : 'edgePassword',
@@ -361,7 +371,7 @@ module.exports = class extends Generator {
 				organization: this.promptAnswers.edgeOrg,
 				username: this.promptAnswers.edgeUsername,
 				password: this.promptAnswers.edgePassword,
-				environments: 'test',
+				environments: this.promptAnswers.edgeEnv,
 				api:this.promptAnswers.name,
 				directory:'./'+this.promptAnswers.name,
 				debug: false
